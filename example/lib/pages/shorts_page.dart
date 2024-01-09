@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xplayer/models/media_item.dart';
-import 'package:xplayer/models/viewer_state.dart';
+
 import 'package:xplayer/views/xplayer_viewer.dart';
 import 'package:xplayer/xplayer.dart';
 
@@ -60,7 +60,7 @@ class _ShortsPageState extends State<ShortsPage> {
             Xplayer.i.seekToPreviousMediaItem();
           }
           oldPage = value;
-          Xplayer.i.claimExoPlayer(Xplayer.i.viewIds[value]);
+          Xplayer.i.claimPlayer(Xplayer.i.viewIds[value]);
         },
         itemBuilder: (context, index) {
           return Stack(

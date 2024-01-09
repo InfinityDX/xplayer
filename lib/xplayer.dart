@@ -55,7 +55,15 @@ class Xplayer {
     return XplayerPlatform.instance.removeView(viewId);
   }
 
-  Future<void> claimExoPlayer(String viewId) async {
-    return XplayerPlatform.instance.claimExoPlayer(viewId);
+  Future<void> claimPlayer(String viewId) async {
+    return XplayerPlatform.instance.claimPlayer(viewId);
+  }
+
+  Future<void> setPlayBackSpeed(double speed) async {
+    return XplayerPlatform.instance.setPlayBackSpeed(speed);
+  }
+
+  Future<void> seekTo(Duration duration) {
+    return XplayerPlatform.instance.seekTo(duration);
   }
 }

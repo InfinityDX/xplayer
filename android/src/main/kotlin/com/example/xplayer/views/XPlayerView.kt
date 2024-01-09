@@ -25,7 +25,6 @@ class XPlayerView(
 
     override fun getView(): View {
         return playerView
-//        return textView
     }
 
     override fun dispose() {
@@ -33,7 +32,6 @@ class XPlayerView(
     }
 
     init {
-
         playerView = PlayerView(context)
         playerView.useController = false
         playerView.setShutterBackgroundColor(Color.TRANSPARENT)

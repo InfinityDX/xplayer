@@ -66,7 +66,15 @@ abstract class XplayerPlatform extends PlatformInterface {
     throw UnimplementedError('clearMediaSource() has not been implemented.');
   }
 
-  Future<void> claimExoPlayer(String viewId) {
+  Future<void> claimPlayer(String viewId) {
     throw UnimplementedError('claimExoPlayer() has not been implemented.');
+  }
+
+  Future<void> seekTo(Duration duration) {
+    throw UnimplementedError('seekTo() has not been implemented.');
+  }
+
+  Future<void> setPlayBackSpeed(double speed) {
+    throw UnimplementedError('setPlayBackSpeed() has not been implemented.');
   }
 }

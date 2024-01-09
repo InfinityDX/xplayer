@@ -80,6 +80,22 @@ class XPlayer {
         player.pause();
     }
 
+    fun setPlayBackSpeed(call: MethodCall){
+        val speed = call.arguments as Double? ?: 1
+
+        player.setPlaybackSpeed(speed.toFloat())
+
+        player.seekTo(2L)
+    }
+
+    fun seekTo(call:MethodCall){
+        val position = call.arguments as Long? ?: 0L
+
+        player.seekTo(position)
+    }
+
+
+
     fun seekToNext() {
         player.seekToNext()
     }
@@ -97,8 +113,6 @@ class XPlayer {
         if (arg !is HashMap<*, *>) return;
 
         val url = arg["url"] as String? ?: ""
-
-
         val mediaItem = MediaItem.fromUri(url)
 
         val hlsMediaSource = HlsMediaSource.Factory(cacheDataSource).createMediaSource(mediaItem)
@@ -132,6 +146,10 @@ class XPlayer {
     fun dispose() {
         player.stop()
         player.release()
+    }
+
+    private fun test(){
+
     }
 
     // Fake data to use

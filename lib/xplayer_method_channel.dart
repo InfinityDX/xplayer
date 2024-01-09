@@ -71,7 +71,17 @@ class MethodChannelXplayer implements XplayerPlatform {
   }
 
   @override
-  Future<void> claimExoPlayer(String viewId) async {
-    await methodChannel.invokeMethod('xplayer:claimExoPlayer', viewId);
+  Future<void> claimPlayer(String viewId) async {
+    await methodChannel.invokeMethod('xplayer:claimPlayer', viewId);
+  }
+
+  @override
+  Future<void> seekTo(Duration duration) async {
+    await methodChannel.invokeMethod('xplayer:seekTo', duration.inMilliseconds);
+  }
+
+  @override
+  Future<void> setPlayBackSpeed(double speed) async {
+    await methodChannel.invokeMethod('xplayer:setPlayBackSpeed', speed);
   }
 }

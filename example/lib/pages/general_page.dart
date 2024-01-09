@@ -13,7 +13,6 @@ class GeneralPage extends StatefulWidget {
 }
 
 class _GeneralPageState extends State<GeneralPage> {
-  String _platformVersion = 'Unknown';
   final xplayer = Xplayer.i;
 
   String url = '';
