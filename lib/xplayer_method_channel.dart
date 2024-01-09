@@ -21,14 +21,7 @@ class MethodChannelXplayer implements XplayerPlatform {
 
   @override
   Future<void> init() async {
-    await methodChannel.invokeMethod('xplayer:init')
-        // .timeout(
-        //   const Duration(seconds: 10),
-        //   onTimeout: () {
-        //     log("XPlayer Initi timeout", name: 'XPlayer');
-        //   },
-        // )
-        ;
+    await methodChannel.invokeMethod('xplayer:init');
   }
 
   @override
@@ -57,7 +50,28 @@ class MethodChannelXplayer implements XplayerPlatform {
   }
 
   @override
+  Future<void> addMediaSources(List<MediaItem> items) async {
+    log(items.map((e) => e.toMap()).toList().toString(), name: 'Xplayer');
+    var result = await methodChannel.invokeMethod(
+      'xplayer:addMediaSources',
+      items.map((e) => e.toMap()).toList(),
+    );
+
+    log(result, name: 'xplayer:addMediaSources');
+  }
+
+  @override
   Future<void> clearMediaSource() async {
     await methodChannel.invokeMethod('xplayer:clearMediaSource');
+  }
+
+  @override
+  Future<void> removeView(String viewId) async {
+    await methodChannel.invokeMethod('xplayer:removeView', viewId);
+  }
+
+  @override
+  Future<void> claimExoPlayer(String viewId) async {
+    await methodChannel.invokeMethod('xplayer:claimExoPlayer', viewId);
   }
 }

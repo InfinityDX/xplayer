@@ -1,9 +1,12 @@
 package com.example.xplayer
 
 import android.content.Context
+import android.view.TextureView
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.cache.CacheDataSource
@@ -12,52 +15,61 @@ import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.source.ConcatenatingMediaSource2
 import androidx.media3.ui.PlayerView
 import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
 
 @OptIn(UnstableApi::class)
 class XPlayer {
-    private val MAX_CAHCE_SIZE = 10L * 1024 * 1024 // in MB, in this case is 10MB
+    private val MAX_CAHCE_SIZE = 100L * 1024 * 1024 // in MB, in this case is 100MB
 
     private var isInitialized = false;
-    private lateinit var playerView: PlayerView
+
     private lateinit var player: ExoPlayer
     private lateinit var context: Context
 
     private lateinit var dataSource: DefaultHttpDataSource.Factory
     private lateinit var cache: SimpleCache
     private lateinit var cacheDataSource: DataSource.Factory
+    private lateinit var databaseProvider: StandaloneDatabaseProvider
 
-
-    fun getPlayerView(): PlayerView {
-        return playerView
-    }
+    lateinit var playerViewController: PlayerViewController;
 
     fun init(context: Context): Boolean {
         return try {
             this.context = context
-
+            playerViewController = PlayerViewController(context);
             dataSource = DefaultHttpDataSource.Factory();
-            cache = SimpleCache(context.cacheDir, LeastRecentlyUsedCacheEvictor(MAX_CAHCE_SIZE))
+            databaseProvider = StandaloneDatabaseProvider(context);
+            cache = SimpleCache(
+                context.cacheDir,
+                LeastRecentlyUsedCacheEvictor(MAX_CAHCE_SIZE),
+                databaseProvider
+            )
             cacheDataSource =
                 CacheDataSource.Factory().setCache(cache).setUpstreamDataSourceFactory(dataSource)
 
-
-            playerView = PlayerView(context)
             val loadControl = DefaultLoadControl.Builder().setBufferDurationsMs(
                 5000, 10000, 2000, 2000
             ).build();
-
             player = ExoPlayer.Builder(context).setLoadControl(loadControl).build()
-            playerView.player = player
-            playerView.useController = false
-
+            player.repeatMode = Player.REPEAT_MODE_ONE
             player.prepare();
+
             true
         } catch (e: Exception) {
             e
             false
         }
+    }
+
+    fun claimExoPlayer(call: MethodCall) {
+        val viewId = call.arguments as String? ?: return
+        val oldPlayerView = playerViewController.getCurrentView()
+        val newPlayerView = playerViewController.getPlayerViewById(viewId) ?: return
+        PlayerView.switchTargetView(player, oldPlayerView, newPlayerView)
+        playerViewController.setCurrentPlayerViewId(viewId)
     }
 
     fun play() {
@@ -90,16 +102,37 @@ class XPlayer {
         val mediaItem = MediaItem.fromUri(url)
 
         val hlsMediaSource = HlsMediaSource.Factory(cacheDataSource).createMediaSource(mediaItem)
+
         player.addMediaSource(hlsMediaSource)
     }
 
+    fun addMediaSources(call: MethodCall, result: MethodChannel.Result) {
+        val arg: Any = call.arguments ?: return;
+        if (arg !is List<*>) {
+            result.success("Data is not List");
+            return;
+        }
+        try {
+            val medias = mutableListOf<HlsMediaSource>();
+            arg.forEach {
+                it as Map<*, *>
+                val url = it["url"] as String? ?: ""
+                val mediaItem = MediaItem.fromUri(url)
+                val hlsSource = HlsMediaSource.Factory(cacheDataSource).createMediaSource(mediaItem)
 
-
-    // Not Used
-    private fun listDownAllMethod(){
-
+                medias.add(hlsSource)
+            }
+            player.addMediaSources(medias.toList())
+            result.success("Success")
+        } catch (e: Exception) {
+            result.success("Fail")
+        }
     }
 
+    fun dispose() {
+        player.stop()
+        player.release()
+    }
 
     // Fake data to use
     private val data = listOf<String>(

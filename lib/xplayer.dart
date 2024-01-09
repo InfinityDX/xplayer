@@ -3,7 +3,16 @@ import 'package:xplayer/models/media_item.dart';
 import 'xplayer_platform_interface.dart';
 
 class Xplayer {
-  static const viewType = 'xplayer_viewer';
+  Xplayer._();
+
+  static Xplayer? _instance;
+
+  /// Xplayer singleton instance
+  static Xplayer get i => _instance ??= Xplayer._();
+
+  static const defaultViewType = 'xplayer_viewer_default';
+
+  List<String> viewIds = [];
 
   Future<String?> getPlatformVersion() {
     return XplayerPlatform.instance.getPlatformVersion();
@@ -33,7 +42,20 @@ class Xplayer {
     return XplayerPlatform.instance.addMediaSource(item);
   }
 
+  Future<void> addMediaSources(List<MediaItem> items) async {
+    return XplayerPlatform.instance.addMediaSources(items);
+  }
+
   Future<void> clearMediaSource() async {
     return XplayerPlatform.instance.clearMediaSource();
+  }
+
+  Future<void> removeView(String viewId) async {
+    viewIds.remove(viewId);
+    return XplayerPlatform.instance.removeView(viewId);
+  }
+
+  Future<void> claimExoPlayer(String viewId) async {
+    return XplayerPlatform.instance.claimExoPlayer(viewId);
   }
 }

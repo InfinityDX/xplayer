@@ -28,6 +28,10 @@ abstract class XplayerPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
+  Future<void> removeView(String viewId) {
+    throw UnimplementedError('removeView() has not been implemented.');
+  }
+
   Future<void> init() {
     throw UnimplementedError('init() has not been implemented.');
   }
@@ -54,7 +58,15 @@ abstract class XplayerPlatform extends PlatformInterface {
     throw UnimplementedError('addMediaSource() has not been implemented.');
   }
 
+  Future<void> addMediaSources(List<MediaItem> item) {
+    throw UnimplementedError('addMediaSource() has not been implemented.');
+  }
+
   Future<void> clearMediaSource() {
     throw UnimplementedError('clearMediaSource() has not been implemented.');
+  }
+
+  Future<void> claimExoPlayer(String viewId) {
+    throw UnimplementedError('claimExoPlayer() has not been implemented.');
   }
 }

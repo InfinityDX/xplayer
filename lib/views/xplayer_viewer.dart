@@ -1,22 +1,63 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:xplayer/xplayer.dart';
 
-class XPlayerViewer extends StatelessWidget {
+class XPlayerViewer extends StatefulWidget {
   const XPlayerViewer({super.key});
 
   @override
+  State<XPlayerViewer> createState() => _XPlayerViewerState();
+}
+
+class _XPlayerViewerState extends State<XPlayerViewer>
+    with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
+  String viewType = Xplayer.defaultViewType;
+  late String viewId;
+
+  bool showPlaceHolder = false;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    viewId = UniqueKey().toString();
+    Xplayer.i.viewIds.add(viewId);
+
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   Xplayer.i.claimExoPlayer(viewId);
+    // });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    log("Disposed");
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
+        // if (!isRegistered) {
+        //   return const ColoredBox(color: Colors.black);
+        // }
 
         /// Virtual View
-        return const AndroidView(
-          viewType: Xplayer.viewType,
+        return AndroidView(
+          viewType: viewType,
           layoutDirection: TextDirection.ltr,
-          creationParams: {},
-          creationParamsCodec: StandardMessageCodec(),
+          creationParams: {'viewId': viewId},
+          creationParamsCodec: const StandardMessageCodec(),
         );
 
       /// Hybrid Compositon
