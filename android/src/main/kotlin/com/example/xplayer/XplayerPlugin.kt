@@ -46,7 +46,7 @@ class XplayerPlugin: FlutterPlugin, MethodCallHandler {
       "xplayer:removeView" -> xplayer.playerViewController.removeView(call) //d
 
       "xplayer:init" -> xplayer.init(context) //d
-      "xplayer:claimExoPlayer" -> xplayer.claimExoPlayer(call) //d
+      "xplayer:claimPlayer" -> xplayer.claimExoPlayer(call) //d
       "xplayer:seekToNext" -> xplayer.seekToNext() //d
       "xplayer:seekTo" -> xplayer.seekTo(call)
       "xplayer:setPlayBackSpeed" -> xplayer.setPlayBackSpeed(call)
