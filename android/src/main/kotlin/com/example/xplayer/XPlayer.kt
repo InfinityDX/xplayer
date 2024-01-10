@@ -40,6 +40,7 @@ class XPlayer : StreamHandler {
     private var xPlayerObserver: XPlayerObserver? = null
 
     lateinit var playerViewController: PlayerViewController;
+    var state= XPlayerValue()
 
     fun init(context: Context): Boolean {
         return try {
@@ -57,7 +58,8 @@ class XPlayer : StreamHandler {
 
             val loadControl = DefaultLoadControl.Builder().setBufferDurationsMs(
                 5000, 10000, 2000, 2000
-            ).build();
+            ).build()
+
             player = ExoPlayer.Builder(context).setLoadControl(loadControl).build()
             player.repeatMode = Player.REPEAT_MODE_ONE
             player.prepare();
@@ -68,6 +70,10 @@ class XPlayer : StreamHandler {
             e
             false
         }
+    }
+
+    fun setPlayerState(newValue: XPlayerValue){
+        state = newValue
     }
 
     fun claimPlayer(call: MethodCall) {
@@ -193,25 +199,15 @@ class XPlayer : StreamHandler {
     }
 
     private fun test() {
-
+//        player.trackSelector
     }
 
     override fun onListen(arguments: Any?, eventSink: EventChannel.EventSink?) {
-
-        xPlayerObserver = XPlayerObserver(eventSink)
-//        eventSink?.success(
-//            Json.encodeToString(
-//                XPlayerValue(
-//                    1,
-//                    2,
-//                    3
-//                )
-//            )
-//        )
+        xPlayerObserver = XPlayerObserver(this, eventSink)
     }
 
     override fun onCancel(arguments: Any?) {
-        if(xPlayerObserver == null) return
+        if (xPlayerObserver == null) return
         player.removeListener(xPlayerObserver!!)
     }
 

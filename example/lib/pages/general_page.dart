@@ -82,10 +82,6 @@ class _GeneralPageState extends State<GeneralPage> {
               ),
             ],
           ),
-          ElevatedButton(
-            onPressed: () => log(UniqueKey().toString()),
-            child: const Text('UniqueKey'),
-          )
         ],
       ),
       bottomNavigationBar: Padding(

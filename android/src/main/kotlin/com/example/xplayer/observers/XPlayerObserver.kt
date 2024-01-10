@@ -1,16 +1,22 @@
 package com.example.xplayer.observers
 
-import android.media.session.PlaybackState
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
+import androidx.media3.common.C
 import androidx.media3.common.Player
-import com.example.xplayer.models.XPlayerValue
+import androidx.media3.common.Tracks
+import com.example.xplayer.XPlayer
+import com.example.xplayer.models.Quality
 import io.flutter.plugin.common.EventChannel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 
-class XPlayerObserver(private val flutterEventSink: EventChannel.EventSink?) : Player.Listener {
+class XPlayerObserver(
+    private val xplayer: XPlayer,
+    private val flutterEventSink: EventChannel.EventSink?
+) : Player.Listener {
     private val RUNNABLE_DELAY_MS = 250L
 
     private var player: Player? = null
@@ -31,15 +37,13 @@ class XPlayerObserver(private val flutterEventSink: EventChannel.EventSink?) : P
 
             runnable = object : Runnable {
                 override fun run() {
-                    flutterEventSink?.success(
-                        Json.encodeToString(
-                            XPlayerValue(
-                                player!!.currentPosition,
-                                player!!.bufferedPosition,
-                                player!!.playbackParameters.speed
-                            )
-                        )
+                    val newPlayerState = xplayer.state.copy(
+                        position = player!!.currentPosition,
+                        bufferedPosition = player!!.bufferedPosition,
+                        playbackSpeed = player!!.playbackParameters.speed
                     )
+                    xplayer.setPlayerState(newPlayerState)
+                    flutterEventSink?.success(Json.encodeToString(newPlayerState))
                     handler.postDelayed(this, RUNNABLE_DELAY_MS)
                 }
             }
@@ -53,5 +57,38 @@ class XPlayerObserver(private val flutterEventSink: EventChannel.EventSink?) : P
         super.onIsPlayingChanged(isPlaying)
     }
 
-    
+    override fun onTracksChanged(tracks: Tracks) {
+        val videoTrackGroup: Tracks.Group =
+            tracks.groups.firstOrNull { it.type == C.TRACK_TYPE_VIDEO } ?: return
+
+        val qualities = mutableListOf<Quality>()
+        for (i in 0 until videoTrackGroup.length) {
+            val trackSupported = videoTrackGroup.isTrackSupported(i)
+            val trackFormat = videoTrackGroup.getTrackFormat(i)
+            if (trackSupported) Log.d("ExoPlayer", "Format: $trackFormat")
+            val quality = Quality(trackFormat.width, trackFormat.height)
+            qualities.add(quality)
+        }
+        val newPlayerState = xplayer.state.copy(qualities = qualities)
+        xplayer.setPlayerState(newPlayerState)
+        flutterEventSink?.success(Json.encodeToString(newPlayerState))
+
+//        for (trackGroup in tracks.groups) {
+//            // Group level information.
+//            val trackType = trackGroup.type
+//            val trackInGroupIsSelected = trackGroup.isSelected
+//            val trackInGroupIsSupported = trackGroup.isSupported
+//                Log.d("ExoPlayer", "onTracksChanged: $trackType")
+//            for (i in 0 until trackGroup.length) {
+//                // Individual track information.
+//                val isSupported = trackGroup.isTrackSupported(i)
+//                val isSelected = trackGroup.isTrackSelected(i)
+//                val trackFormat = trackGroup.getTrackFormat(i)
+//
+//            }
+//        }
+        super.onTracksChanged(tracks)
+    }
+
+
 }
