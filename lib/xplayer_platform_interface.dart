@@ -1,5 +1,6 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:xplayer/models/media_item.dart';
+import 'package:xplayer/models/xplayer_value.dart';
 
 import 'xplayer_method_channel.dart';
 
@@ -80,6 +81,10 @@ abstract class XplayerPlatform extends PlatformInterface {
 
   Future<void> setPlayBackSpeed(double speed) {
     throw UnimplementedError('setPlayBackSpeed() has not been implemented.');
+  }
+
+  Future<void> changeQuality(Quality quality) {
+    throw UnimplementedError('changeQuality() has not been implemented.');
   }
 
   Future<void> dispose() {

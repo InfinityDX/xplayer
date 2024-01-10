@@ -55,6 +55,7 @@ class XplayerPlugin : FlutterPlugin, MethodCallHandler {
             "xplayer:addMediaSources" -> xplayer.addMediaSources(call, result) //d
             "xplayer:setMediaSource" -> xplayer.setMediaSource(call)
             "xplayer:setMediaSources" -> xplayer.setMediaSources(call, result)
+            "xplayer:changeQuality" -> xplayer.changeQuality(call)
             "xplayer:clearAllMediaSource" -> xplayer.clearAllMediaSource() //d
             "xplayer:play" -> xplayer.play() //d
             "xplayer:pause" -> xplayer.pause() //d

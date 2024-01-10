@@ -2,6 +2,7 @@ package com.example.xplayer
 
 import android.content.Context
 import androidx.annotation.OptIn
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -40,7 +41,7 @@ class XPlayer : StreamHandler {
     private var xPlayerObserver: XPlayerObserver? = null
 
     lateinit var playerViewController: PlayerViewController;
-    var state= XPlayerValue()
+    var state = XPlayerValue()
 
     fun init(context: Context): Boolean {
         return try {
@@ -72,7 +73,7 @@ class XPlayer : StreamHandler {
         }
     }
 
-    fun setPlayerState(newValue: XPlayerValue){
+    fun setPlayerState(newValue: XPlayerValue) {
         state = newValue
     }
 
@@ -198,8 +199,17 @@ class XPlayer : StreamHandler {
 
     }
 
+    fun changeQuality(call: MethodCall) {
+        val quality = call.arguments as Map<*, *>? ?: return
+
+        val height = quality["height"] as Int? ?: return
+        val width = quality["width"] as Int? ?: return
+
+       player.trackSelectionParameters = player.trackSelectionParameters.buildUpon().setMaxVideoSize(width, height).setMinVideoSize(width, height).build()
+    }
+
     private fun test() {
-//        player.trackSelector
+        player.trackSelectionParameters.buildUpon().clearVideoSizeConstraints()
     }
 
     override fun onListen(arguments: Any?, eventSink: EventChannel.EventSink?) {

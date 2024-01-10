@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:xplayer/models/media_item.dart';
+import 'package:xplayer/models/xplayer_value.dart';
 
 import 'xplayer_platform_interface.dart';
 
@@ -97,5 +98,10 @@ class MethodChannelXplayer implements XplayerPlatform {
   @override
   Future<void> dispose() async {
     await methodChannel.invokeMethod('xplayer:dispose');
+  }
+
+  @override
+  Future<void> changeQuality(Quality quality) async {
+    await methodChannel.invokeMethod('xplayer:changeQuality', quality.toMap());
   }
 }

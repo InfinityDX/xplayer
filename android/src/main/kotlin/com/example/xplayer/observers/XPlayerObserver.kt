@@ -63,9 +63,12 @@ class XPlayerObserver(
 
         val qualities = mutableListOf<Quality>()
         for (i in 0 until videoTrackGroup.length) {
+            val trackSelected = videoTrackGroup.isTrackSelected(i)
             val trackSupported = videoTrackGroup.isTrackSupported(i)
             val trackFormat = videoTrackGroup.getTrackFormat(i)
-            if (trackSupported) Log.d("ExoPlayer", "Format: $trackFormat")
+            if (trackSupported) {
+                Log.d("ExoPlayer", "Format: $trackFormat TrackSelected: $trackSelected")
+            }
             val quality = Quality(trackFormat.width, trackFormat.height)
             qualities.add(quality)
         }
@@ -73,20 +76,6 @@ class XPlayerObserver(
         xplayer.setPlayerState(newPlayerState)
         flutterEventSink?.success(Json.encodeToString(newPlayerState))
 
-//        for (trackGroup in tracks.groups) {
-//            // Group level information.
-//            val trackType = trackGroup.type
-//            val trackInGroupIsSelected = trackGroup.isSelected
-//            val trackInGroupIsSupported = trackGroup.isSupported
-//                Log.d("ExoPlayer", "onTracksChanged: $trackType")
-//            for (i in 0 until trackGroup.length) {
-//                // Individual track information.
-//                val isSupported = trackGroup.isTrackSupported(i)
-//                val isSelected = trackGroup.isTrackSelected(i)
-//                val trackFormat = trackGroup.getTrackFormat(i)
-//
-//            }
-//        }
         super.onTracksChanged(tracks)
     }
 

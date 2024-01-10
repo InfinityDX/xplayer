@@ -94,4 +94,12 @@ class Xplayer {
   Future<void> seekTo(Duration duration) {
     return XplayerPlatform.instance.seekTo(duration);
   }
+
+  Future<void> changeQuality(Quality quality) {
+    return XplayerPlatform.instance.changeQuality(quality);
+  }
+
+  Future<void> dispose() {
+    return XplayerPlatform.instance.dispose();
+  }
 }
