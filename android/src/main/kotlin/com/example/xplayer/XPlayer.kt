@@ -96,7 +96,6 @@ class XPlayer : StreamHandler {
     fun setPlayBackSpeed(call: MethodCall) {
         val speed = call.arguments as Double? ?: 1
         player.setPlaybackSpeed(speed.toFloat())
-        player.seekTo(2L)
     }
 
     fun seekTo(call: MethodCall) {

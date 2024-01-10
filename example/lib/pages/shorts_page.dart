@@ -19,6 +19,8 @@ class _ShortsPageState extends State<ShortsPage> {
 
   int oldPage = 0;
 
+  double oldSpeed = 1;
+
   @override
   void initState() {
     xplayer.init();
@@ -44,6 +46,7 @@ class _ShortsPageState extends State<ShortsPage> {
       "https://wrs.youtubes.fan/temp/8fffa416-6f80-41a4-b609-41174e51bd98_48f93818-c86a-461d-9d34-c43b5121780e-playlist.m3u8",
       "https://wrs.youtubes.fan/temp/59852964-963b-4f8a-9fcd-3cd361ece5f5_c7722d32-3821-4a22-8ad0-2dbbb28bc09f-playlist.m3u8",
     ].map((e) => MediaItem(e)).toList());
+    xplayer.claimPlayer(xplayer.viewIds.first);
     xplayer.play();
   }
 
@@ -82,6 +85,19 @@ class _ShortsPageState extends State<ShortsPage> {
                     height: MediaQuery.of(context).size.width * 16 / 9,
                     child: const XPlayerViewer(),
                   ),
+                ),
+              ),
+              SizedBox.expand(
+                child: GestureDetector(
+                  onLongPressStart: (details) {
+                    oldSpeed = Xplayer.i.state.value.playbackSpeed ?? 1;
+                  },
+                  onLongPress: () {
+                    Xplayer.i.setPlayBackSpeed(2);
+                  },
+                  onLongPressEnd: (details) {
+                    Xplayer.i.setPlayBackSpeed(oldSpeed);
+                  },
                 ),
               ),
               Center(
