@@ -61,6 +61,22 @@ class MethodChannelXplayer implements XplayerPlatform {
   }
 
   @override
+  Future<void> setMediaSource(MediaItem item) async {
+    await methodChannel.invokeMethod('xplayer:setMediaSource', item.toMap());
+  }
+
+  @override
+  Future<void> setMediaSources(List<MediaItem> items) async {
+    log(items.map((e) => e.toMap()).toList().toString(), name: 'Xplayer');
+    var result = await methodChannel.invokeMethod(
+      'xplayer:setMediaSources',
+      items.map((e) => e.toMap()).toList(),
+    );
+
+    log(result, name: 'xplayer:addMediaSources');
+  }
+
+  @override
   Future<void> clearMediaSource() async {
     await methodChannel.invokeMethod('xplayer:clearMediaSource');
   }

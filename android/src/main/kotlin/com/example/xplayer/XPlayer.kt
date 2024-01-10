@@ -1,7 +1,6 @@
 package com.example.xplayer
 
 import android.content.Context
-import android.view.TextureView
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -15,13 +14,14 @@ import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
-import androidx.media3.exoplayer.source.ConcatenatingMediaSource2
 import androidx.media3.ui.PlayerView
+import io.flutter.plugin.common.EventChannel
+import io.flutter.plugin.common.EventChannel.StreamHandler
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
 @OptIn(UnstableApi::class)
-class XPlayer {
+class XPlayer: StreamHandler {
     private val MAX_CAHCE_SIZE = 100L * 1024 * 1024 // in MB, in this case is 100MB
 
     private var isInitialized = false;
@@ -82,15 +82,12 @@ class XPlayer {
 
     fun setPlayBackSpeed(call: MethodCall){
         val speed = call.arguments as Double? ?: 1
-
         player.setPlaybackSpeed(speed.toFloat())
-
         player.seekTo(2L)
     }
 
     fun seekTo(call:MethodCall){
         val position = call.arguments as Long? ?: 0L
-
         player.seekTo(position)
     }
 
@@ -108,6 +105,8 @@ class XPlayer {
         player.clearMediaItems()
     }
 
+
+
     fun addMediaSource(call: MethodCall) {
         val arg: Any = call.arguments ?: return;
         if (arg !is HashMap<*, *>) return;
@@ -121,6 +120,41 @@ class XPlayer {
     }
 
     fun addMediaSources(call: MethodCall, result: MethodChannel.Result) {
+        val arg: Any = call.arguments ?: return;
+        if (arg !is List<*>) {
+            result.success("Data is not List");
+            return;
+        }
+        try {
+            val medias = mutableListOf<HlsMediaSource>();
+            arg.forEach {
+                it as Map<*, *>
+                val url = it["url"] as String? ?: ""
+                val mediaItem = MediaItem.fromUri(url)
+                val hlsSource = HlsMediaSource.Factory(cacheDataSource).createMediaSource(mediaItem)
+
+                medias.add(hlsSource)
+            }
+            player.addMediaSources(medias.toList())
+            result.success("Success")
+        } catch (e: Exception) {
+            result.success("Fail")
+        }
+    }
+
+    fun setMediaSource(call: MethodCall) {
+        val arg: Any = call.arguments ?: return;
+        if (arg !is HashMap<*, *>) return;
+
+        val url = arg["url"] as String? ?: ""
+        val mediaItem = MediaItem.fromUri(url)
+
+        val hlsMediaSource = HlsMediaSource.Factory(cacheDataSource).createMediaSource(mediaItem)
+
+        player.setMediaSource(hlsMediaSource)
+    }
+
+    fun setMediaSources(call: MethodCall, result: MethodChannel.Result) {
         val arg: Any = call.arguments ?: return;
         if (arg !is List<*>) {
             result.success("Data is not List");
@@ -179,4 +213,12 @@ class XPlayer {
         "https://wrs.youtubes.fan/temp/e8bd0a28-910b-4cf2-93ed-c09df7fd893e_8db1a9ec-aa7b-4349-afdb-a8cedf0497fc-playlist.m3u8",
         "https://wrs.youtubes.fan/temp/596c9964-e0d4-417c-8650-c6bee39d6127_497c34e6-5e7f-4e3a-bdb7-b6f2c9206692-playlist.m3u8",
     )
+
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onCancel(arguments: Any?) {
+        TODO("Not yet implemented")
+    }
 }

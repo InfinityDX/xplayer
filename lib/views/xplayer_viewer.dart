@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:xplayer/xplayer.dart';
 
 class XPlayerViewer extends StatefulWidget {
-  const XPlayerViewer({super.key});
+  final bool autoClaimPlayer;
+  const XPlayerViewer({this.autoClaimPlayer = false, super.key});
 
   @override
   State<XPlayerViewer> createState() => _XPlayerViewerState();
@@ -25,9 +26,11 @@ class _XPlayerViewerState extends State<XPlayerViewer>
     viewId = UniqueKey().toString();
     Xplayer.i.viewIds.add(viewId);
 
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //   Xplayer.i.claimExoPlayer(viewId);
-    // });
+    if (widget.autoClaimPlayer) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        Xplayer.i.claimPlayer(viewId);
+      });
+    }
 
     super.initState();
   }

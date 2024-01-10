@@ -20,6 +20,7 @@ class XplayerPlugin: FlutterPlugin, MethodCallHandler {
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
   private lateinit var channel : MethodChannel
+  private lateinit var eventChannel: EventChannel
   private lateinit var context: Context
   private lateinit var platformRegistry: PlatformViewRegistry
 
@@ -29,10 +30,14 @@ class XplayerPlugin: FlutterPlugin, MethodCallHandler {
 
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-
     context = flutterPluginBinding.applicationContext
+
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "xplayer")
     channel.setMethodCallHandler(this)
+
+    eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "xplayer_events")
+    eventChannel.setStreamHandler(xplayer)
+
     platformRegistry = flutterPluginBinding.platformViewRegistry
     flutterPluginBinding.platformViewRegistry.registerViewFactory(
       "xplayer_viewer_default",
@@ -53,6 +58,8 @@ class XplayerPlugin: FlutterPlugin, MethodCallHandler {
       "xplayer:seekToPreviousMediaItem" -> xplayer.seekToPreviousMediaItem() //d
       "xplayer:addMediaSource" -> xplayer.addMediaSource(call) //d
       "xplayer:addMediaSources" -> xplayer.addMediaSources(call, result) //d
+      "xplayer:setMediaSource" -> xplayer.setMediaSource(call)
+      "xplayer:setMediaSources" -> xplayer.setMediaSources(call, result)
       "xplayer:clearAllMediaSource" -> xplayer.clearAllMediaSource() //d
       "xplayer:play" -> xplayer.play() //d
       "xplayer:pause" -> xplayer.pause() //d

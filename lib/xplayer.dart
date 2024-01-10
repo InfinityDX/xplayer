@@ -13,6 +13,7 @@ class Xplayer {
   static const defaultViewType = 'xplayer_viewer_default';
 
   List<String> viewIds = [];
+  String currentViewId = '';
 
   Future<String?> getPlatformVersion() {
     return XplayerPlatform.instance.getPlatformVersion();
@@ -46,6 +47,14 @@ class Xplayer {
     return XplayerPlatform.instance.addMediaSources(items);
   }
 
+  Future<void> setMediaSource(MediaItem item) async {
+    return XplayerPlatform.instance.setMediaSource(item);
+  }
+
+  Future<void> setMediaSources(List<MediaItem> items) async {
+    return XplayerPlatform.instance.setMediaSources(items);
+  }
+
   Future<void> clearMediaSource() async {
     return XplayerPlatform.instance.clearMediaSource();
   }
@@ -56,6 +65,8 @@ class Xplayer {
   }
 
   Future<void> claimPlayer(String viewId) async {
+    if (currentViewId == viewId) return;
+    currentViewId = viewId;
     return XplayerPlatform.instance.claimPlayer(viewId);
   }
 

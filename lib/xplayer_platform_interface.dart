@@ -62,6 +62,14 @@ abstract class XplayerPlatform extends PlatformInterface {
     throw UnimplementedError('addMediaSource() has not been implemented.');
   }
 
+  Future<void> setMediaSource(MediaItem item) {
+    throw UnimplementedError('setMediaSource() has not been implemented.');
+  }
+
+  Future<void> setMediaSources(List<MediaItem> item) {
+    throw UnimplementedError('setMediaSource() has not been implemented.');
+  }
+
   Future<void> clearMediaSource() {
     throw UnimplementedError('clearMediaSource() has not been implemented.');
   }
