@@ -3,9 +3,6 @@ package com.example.xplayer
 import android.content.Context
 import com.example.xplayer.views.XPlayerViewFactory
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.embedding.engine.plugins.activity.ActivityAware
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
-import io.flutter.embedding.engine.systemchannels.KeyEventChannel.EventResponseHandler
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -51,7 +48,7 @@ class XplayerPlugin: FlutterPlugin, MethodCallHandler {
       "xplayer:removeView" -> xplayer.playerViewController.removeView(call) //d
 
       "xplayer:init" -> xplayer.init(context) //d
-      "xplayer:claimPlayer" -> xplayer.claimExoPlayer(call) //d
+      "xplayer:claimPlayer" -> xplayer.claimPlayer(call) //d
       "xplayer:seekToNext" -> xplayer.seekToNext() //d
       "xplayer:seekTo" -> xplayer.seekTo(call)
       "xplayer:setPlayBackSpeed" -> xplayer.setPlayBackSpeed(call)

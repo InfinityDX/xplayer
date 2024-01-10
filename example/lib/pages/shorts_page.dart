@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:xplayer/models/media_item.dart';
 
@@ -19,6 +21,10 @@ class _ShortsPageState extends State<ShortsPage> {
 
   @override
   void initState() {
+    Xplayer.i.eventChannel.receiveBroadcastStream().listen((event) {
+      log(event.toString(), name: 'ShortsPage');
+    });
+
     xplayer.init();
     addSources();
     super.initState();

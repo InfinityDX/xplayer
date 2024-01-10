@@ -1,8 +1,11 @@
+import 'package:flutter/services.dart';
 import 'package:xplayer/models/media_item.dart';
 
 import 'xplayer_platform_interface.dart';
 
 class Xplayer {
+  final eventChannel = const EventChannel('xplayer_events');
+
   Xplayer._();
 
   static Xplayer? _instance;

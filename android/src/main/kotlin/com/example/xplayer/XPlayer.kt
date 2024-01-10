@@ -15,10 +15,13 @@ import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.ui.PlayerView
+import com.example.xplayer.models.XPlayerValue
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.StreamHandler
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @OptIn(UnstableApi::class)
 class XPlayer: StreamHandler {
@@ -64,7 +67,7 @@ class XPlayer: StreamHandler {
         }
     }
 
-    fun claimExoPlayer(call: MethodCall) {
+    fun claimPlayer(call: MethodCall) {
         val viewId = call.arguments as String? ?: return
         val oldPlayerView = playerViewController.getCurrentView()
         val newPlayerView = playerViewController.getPlayerViewById(viewId) ?: return
@@ -186,6 +189,18 @@ class XPlayer: StreamHandler {
 
     }
 
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+        events?.success(Json.encodeToString(XPlayerValue(
+            1f,
+            2f,
+            3.2f
+        )) )
+    }
+
+    override fun onCancel(arguments: Any?) {
+        TODO("Not yet implemented")
+    }
+
     // Fake data to use
     private val data = listOf<String>(
         "https://wrs.youtubes.fan/temp/0be373aa-b4f2-40ea-9131-bb72bef5d752_11f1572f-dadd-4add-b204-b7a962031a52-playlist.m3u8",
@@ -213,12 +228,4 @@ class XPlayer: StreamHandler {
         "https://wrs.youtubes.fan/temp/e8bd0a28-910b-4cf2-93ed-c09df7fd893e_8db1a9ec-aa7b-4349-afdb-a8cedf0497fc-playlist.m3u8",
         "https://wrs.youtubes.fan/temp/596c9964-e0d4-417c-8650-c6bee39d6127_497c34e6-5e7f-4e3a-bdb7-b6f2c9206692-playlist.m3u8",
     )
-
-    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onCancel(arguments: Any?) {
-        TODO("Not yet implemented")
-    }
 }
