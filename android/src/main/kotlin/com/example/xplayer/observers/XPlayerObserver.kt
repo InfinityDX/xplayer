@@ -3,7 +3,6 @@ package com.example.xplayer.observers
 import android.media.session.PlaybackState
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.media3.common.Player
 import com.example.xplayer.models.XPlayerValue
 import io.flutter.plugin.common.EventChannel
@@ -12,18 +11,22 @@ import kotlinx.serialization.json.Json
 
 
 class XPlayerObserver(private val flutterEventSink: EventChannel.EventSink?) : Player.Listener {
-    private val RUNNABLE_DELAY_MS = 100L
+    private val RUNNABLE_DELAY_MS = 250L
 
+    private var player: Player? = null
     private var handlerHasCallback = false
-
     private var handler: Handler = Handler(Looper.getMainLooper())
     private var runnable: Runnable? = null
 
     override fun onEvents(player: Player, events: Player.Events) {
-        val playbackState = player.playbackState;
-        Log.d("ExoPlayer", "$playbackState")
+        if (this.player == null) this.player = player
+        super.onEvents(player, events)
+    }
 
-        if (playbackState == PlaybackState.STATE_PLAYING) {
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        if (player == null) return
+
+        if (isPlaying) {
             if (handlerHasCallback) return
 
             runnable = object : Runnable {
@@ -31,9 +34,9 @@ class XPlayerObserver(private val flutterEventSink: EventChannel.EventSink?) : P
                     flutterEventSink?.success(
                         Json.encodeToString(
                             XPlayerValue(
-                                player.currentPosition,
-                                player.bufferedPosition,
-                                player.playbackParameters.speed
+                                player!!.currentPosition,
+                                player!!.bufferedPosition,
+                                player!!.playbackParameters.speed
                             )
                         )
                     )
@@ -47,8 +50,8 @@ class XPlayerObserver(private val flutterEventSink: EventChannel.EventSink?) : P
             handlerHasCallback = false
         }
 
-
-
-        super.onEvents(player, events)
+        super.onIsPlayingChanged(isPlaying)
     }
+
+    
 }

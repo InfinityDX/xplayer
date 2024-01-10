@@ -45,7 +45,7 @@ class _GeneralPageState extends State<GeneralPage> {
               borderRadius: BorderRadius.circular(8),
               color: Colors.black,
             ),
-            child: const XPlayerViewer(),
+            child: const XPlayerViewer(autoClaimPlayer: true),
           ),
           const SizedBox(height: 16),
           Row(

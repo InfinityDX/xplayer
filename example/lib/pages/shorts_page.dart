@@ -29,6 +29,7 @@ class _ShortsPageState extends State<ShortsPage> {
   void addSources() async {
     await xplayer.addMediaSources([
       "https://wrs.youtubes.fan/temp/0be373aa-b4f2-40ea-9131-bb72bef5d752_11f1572f-dadd-4add-b204-b7a962031a52-playlist.m3u8",
+      "https://events-delivery.apple.com/2409nbcxymeynatwojbbrjuhryomtudb/m3u8/vod_index-oXZvssLWyjfQDEQuVuCBHPWDywaNEipk.m3u8",
       "https://wrs.youtubes.fan/temp/fb116823-c82b-4faa-883e-10e30062ffbf_1fdb923c-3991-4dbb-ab20-b357531e8285-playlist.m3u8",
       "https://wrs.youtubes.fan/temp/bd2376ce-a860-4a60-bdad-294ae3f4dfed_cfe77db9-fa48-4014-be34-760872bbd980-playlist.m3u8",
       "https://wrs.youtubes.fan/temp/2555a9b8-4964-404e-b4a1-e5efd57f87f2_6be46a14-9abb-4403-8d70-9184dd9c8c41-playlist.m3u8",
