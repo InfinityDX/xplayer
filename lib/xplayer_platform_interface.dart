@@ -83,7 +83,7 @@ abstract class XplayerPlatform extends PlatformInterface {
     throw UnimplementedError('setPlayBackSpeed() has not been implemented.');
   }
 
-  Future<void> changeQuality(Quality quality) {
+  Future<void> changeQuality(Quality? quality) {
     throw UnimplementedError('changeQuality() has not been implemented.');
   }
 

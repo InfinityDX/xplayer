@@ -200,7 +200,11 @@ class XPlayer : StreamHandler {
     }
 
     fun changeQuality(call: MethodCall) {
-        val quality = call.arguments as Map<*, *>? ?: return
+        val quality = call.arguments as Map<*, *>?
+        if(quality == null) {
+            player.trackSelectionParameters = player.trackSelectionParameters.buildUpon().clearVideoSizeConstraints().build()
+            return
+        }
 
         val height = quality["height"] as Int? ?: return
         val width = quality["width"] as Int? ?: return

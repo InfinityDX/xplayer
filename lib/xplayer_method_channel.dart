@@ -101,7 +101,7 @@ class MethodChannelXplayer implements XplayerPlatform {
   }
 
   @override
-  Future<void> changeQuality(Quality quality) async {
-    await methodChannel.invokeMethod('xplayer:changeQuality', quality.toMap());
+  Future<void> changeQuality(Quality? quality) async {
+    await methodChannel.invokeMethod('xplayer:changeQuality', quality?.toMap());
   }
 }

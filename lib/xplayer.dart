@@ -95,7 +95,7 @@ class Xplayer {
     return XplayerPlatform.instance.seekTo(duration);
   }
 
-  Future<void> changeQuality(Quality quality) {
+  Future<void> changeQuality(Quality? quality) {
     return XplayerPlatform.instance.changeQuality(quality);
   }
 

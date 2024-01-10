@@ -92,9 +92,21 @@ class _GeneralPageState extends State<GeneralPage> {
             valueListenable: Xplayer.i.state,
             builder: (context, playerState, _) {
               return SliverList.builder(
-                itemCount: playerState.qualities?.length ?? 0,
+                itemCount: (playerState.qualities?.length ?? 0) + 1,
                 itemBuilder: (context, index) {
-                  var quality = playerState.qualities?[index];
+                  if (index == 0) {
+                    return Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Xplayer.i.changeQuality(null);
+                        },
+                        child: const Text('Auto'),
+                      ),
+                    );
+                  }
+
+                  var quality = playerState.qualities?[index - 1];
+
                   return Center(
                     child: ElevatedButton(
                       onPressed: () {
