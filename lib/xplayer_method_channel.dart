@@ -13,13 +13,6 @@ class MethodChannelXplayer implements XplayerPlatform {
   final methodChannel = const MethodChannel('xplayer');
 
   @override
-  Future<String?> getPlatformVersion() async {
-    final version =
-        await methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
-  }
-
-  @override
   Future<void> init() async {
     await methodChannel.invokeMethod('xplayer:init');
   }

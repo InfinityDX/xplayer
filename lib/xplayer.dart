@@ -1,10 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:xplayer/models/media_item.dart';
+import 'package:xplayer/models/xplayer_value.dart';
 
 import 'xplayer_platform_interface.dart';
 
 class Xplayer {
-  final eventChannel = const EventChannel('xplayer_events');
+  final _eventChannel = const EventChannel('xplayer_events');
 
   Xplayer._();
 
@@ -15,12 +17,10 @@ class Xplayer {
 
   static const defaultViewType = 'xplayer_viewer_default';
 
+  final ValueNotifier<XPlayerValue> value = ValueNotifier(const XPlayerValue());
+
   List<String> viewIds = [];
   String currentViewId = '';
-
-  Future<String?> getPlatformVersion() {
-    return XplayerPlatform.instance.getPlatformVersion();
-  }
 
   Future<void> init() async {
     return XplayerPlatform.instance.init();

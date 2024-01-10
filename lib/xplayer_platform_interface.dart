@@ -24,10 +24,6 @@ abstract class XplayerPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
-  }
-
   Future<void> removeView(String viewId) {
     throw UnimplementedError('removeView() has not been implemented.');
   }
