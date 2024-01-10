@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:xplayer/models/media_item.dart';
@@ -6,21 +8,33 @@ import 'package:xplayer/models/xplayer_value.dart';
 import 'xplayer_platform_interface.dart';
 
 class Xplayer {
-  final _eventChannel = const EventChannel('xplayer_events');
+  static const defaultViewType = 'xplayer_viewer_default';
 
-  Xplayer._();
+  final _eventChannel = const EventChannel('xplayer_events');
 
   static Xplayer? _instance;
 
   /// Xplayer singleton instance
   static Xplayer get i => _instance ??= Xplayer._();
 
-  static const defaultViewType = 'xplayer_viewer_default';
+  Xplayer._() {
+    _eventChannel.receiveBroadcastStream().listen(onPlayerValueChanged);
+  }
 
-  final ValueNotifier<XPlayerValue> value = ValueNotifier(const XPlayerValue());
+  final ValueNotifier<XPlayerValue> state = ValueNotifier(const XPlayerValue());
 
   List<String> viewIds = [];
   String currentViewId = '';
+
+  void onPlayerValueChanged(dynamic event) {
+    if (event is! String) {
+      log('Event Data from native is not type String', name: "xplayer_events");
+      return;
+    }
+    log(event, name: 'Xplayer');
+    var xplayerValue = XPlayerValue.fromJson(event);
+    state.value = xplayerValue;
+  }
 
   Future<void> init() async {
     return XplayerPlatform.instance.init();

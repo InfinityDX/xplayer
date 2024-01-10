@@ -15,7 +15,6 @@ class XPlayerViewer extends StatefulWidget {
 
 class _XPlayerViewerState extends State<XPlayerViewer>
     with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
-  String viewType = Xplayer.defaultViewType;
   late String viewId;
 
   bool showPlaceHolder = false;
@@ -57,7 +56,7 @@ class _XPlayerViewerState extends State<XPlayerViewer>
 
         /// Virtual View
         return AndroidView(
-          viewType: viewType,
+          viewType: Xplayer.defaultViewType,
           layoutDirection: TextDirection.ltr,
           creationParams: {'viewId': viewId},
           creationParamsCodec: const StandardMessageCodec(),

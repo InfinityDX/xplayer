@@ -16,6 +16,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.ui.PlayerView
 import com.example.xplayer.models.XPlayerValue
+import com.example.xplayer.observers.XPlayerObserver
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.StreamHandler
 import io.flutter.plugin.common.MethodCall
@@ -24,7 +25,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @OptIn(UnstableApi::class)
-class XPlayer: StreamHandler {
+class XPlayer : StreamHandler {
     private val MAX_CAHCE_SIZE = 100L * 1024 * 1024 // in MB, in this case is 100MB
 
     private var isInitialized = false;
@@ -36,6 +37,7 @@ class XPlayer: StreamHandler {
     private lateinit var cache: SimpleCache
     private lateinit var cacheDataSource: DataSource.Factory
     private lateinit var databaseProvider: StandaloneDatabaseProvider
+    private var xPlayerObserver: XPlayerObserver? = null
 
     lateinit var playerViewController: PlayerViewController;
 
@@ -59,6 +61,7 @@ class XPlayer: StreamHandler {
             player = ExoPlayer.Builder(context).setLoadControl(loadControl).build()
             player.repeatMode = Player.REPEAT_MODE_ONE
             player.prepare();
+            if (xPlayerObserver != null) player.addListener(xPlayerObserver!!)
 
             true
         } catch (e: Exception) {
@@ -83,17 +86,16 @@ class XPlayer: StreamHandler {
         player.pause();
     }
 
-    fun setPlayBackSpeed(call: MethodCall){
+    fun setPlayBackSpeed(call: MethodCall) {
         val speed = call.arguments as Double? ?: 1
         player.setPlaybackSpeed(speed.toFloat())
         player.seekTo(2L)
     }
 
-    fun seekTo(call:MethodCall){
+    fun seekTo(call: MethodCall) {
         val position = call.arguments as Long? ?: 0L
         player.seekTo(position)
     }
-
 
 
     fun seekToNext() {
@@ -107,7 +109,6 @@ class XPlayer: StreamHandler {
     fun clearAllMediaSource() {
         player.clearMediaItems()
     }
-
 
 
     fun addMediaSource(call: MethodCall) {
@@ -180,25 +181,38 @@ class XPlayer: StreamHandler {
         }
     }
 
-    fun dispose() {
-        player.stop()
-        player.release()
+    fun dispose(result: MethodChannel.Result?) {
+        try {
+            player.stop()
+            player.release()
+            result?.success("XPlayer Disposed")
+        } catch (e: Exception) {
+            result?.success("Could Not Dispose XPlayer")
+        }
+
     }
 
-    private fun test(){
+    private fun test() {
 
     }
 
-    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-        events?.success(Json.encodeToString(XPlayerValue(
-            1f,
-            2f,
-            3.2f
-        )) )
+    override fun onListen(arguments: Any?, eventSink: EventChannel.EventSink?) {
+
+        xPlayerObserver = XPlayerObserver(eventSink)
+//        eventSink?.success(
+//            Json.encodeToString(
+//                XPlayerValue(
+//                    1,
+//                    2,
+//                    3
+//                )
+//            )
+//        )
     }
 
     override fun onCancel(arguments: Any?) {
-        TODO("Not yet implemented")
+        if(xPlayerObserver == null) return
+        player.removeListener(xPlayerObserver!!)
     }
 
     // Fake data to use

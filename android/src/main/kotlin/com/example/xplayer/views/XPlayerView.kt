@@ -2,14 +2,10 @@ package com.example.xplayer.views
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
-import com.example.xplayer.PlayerViewController
 import com.example.xplayer.XPlayer
 import io.flutter.plugin.platform.PlatformView
 

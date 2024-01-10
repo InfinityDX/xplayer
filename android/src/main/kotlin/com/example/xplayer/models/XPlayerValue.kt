@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class XPlayerValue (
-    val position: Float,
-    val bufferedPosition: Float,
+    val position: Long,
+    val bufferedPosition: Long,
     val playbackSpeed: Float
 )

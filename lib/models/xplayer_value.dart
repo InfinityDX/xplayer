@@ -3,7 +3,7 @@ import 'dart:convert';
 class XPlayerValue {
   final int? positon;
   final int? bufferedPosition;
-  final int? playbackSpeed;
+  final double? playbackSpeed;
 
   const XPlayerValue({
     this.positon,
@@ -14,7 +14,7 @@ class XPlayerValue {
   XPlayerValue copyWith({
     int? positon,
     int? bufferedPosition,
-    int? playbackSpeed,
+    double? playbackSpeed,
   }) =>
       XPlayerValue(
         positon: positon ?? this.positon,

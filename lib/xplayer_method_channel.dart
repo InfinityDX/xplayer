@@ -93,4 +93,9 @@ class MethodChannelXplayer implements XplayerPlatform {
   Future<void> setPlayBackSpeed(double speed) async {
     await methodChannel.invokeMethod('xplayer:setPlayBackSpeed', speed);
   }
+
+  @override
+  Future<void> dispose() async {
+    await methodChannel.invokeMethod('xplayer:dispose');
+  }
 }
