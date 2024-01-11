@@ -19,6 +19,11 @@ class MethodChannelXplayer implements XplayerPlatform {
   }
 
   @override
+  Future<void> registerPlaylist(String playListName) async {
+    await methodChannel.invokeMethod('xplayer:registerPlaylist', playListName);
+  }
+
+  @override
   Future<void> seekToNext() async {
     await methodChannel.invokeMethod('xplayer:seekToNext');
   }

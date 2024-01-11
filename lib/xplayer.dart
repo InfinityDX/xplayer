@@ -23,10 +23,11 @@ class Xplayer {
   }
 
   final _eventChannel = const EventChannel('xplayer_events');
+
   final ValueNotifier<bool> initialized = ValueNotifier(false);
   final ValueNotifier<XPlayerValue> state = ValueNotifier(const XPlayerValue());
-
-  List<String> viewIds = [];
+  final List<String> playlistNames = [];
+  final List<String> viewIds = [];
   String currentViewId = '';
 
   void onPlayerValueChanged(dynamic event) {
@@ -47,6 +48,12 @@ class Xplayer {
   Future<void> init() async {
     await XplayerPlatform.instance.init();
     initialized.value = true;
+  }
+
+  Future<void> registerPlaylist(String playListName) async {
+    if (playlistNames.contains(playListName)) return;
+    playlistNames.add(playListName);
+    await XplayerPlatform.instance.registerPlaylist(playListName);
   }
 
   Future<void> seekToNext() {

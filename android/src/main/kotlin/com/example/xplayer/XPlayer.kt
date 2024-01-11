@@ -17,6 +17,7 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.ui.PlayerView
+import com.example.xplayer.models.Playlist
 import com.example.xplayer.models.XPlayerValue
 import com.example.xplayer.observers.XPlayerObserver
 import io.flutter.plugin.common.EventChannel
@@ -41,6 +42,7 @@ class XPlayer : StreamHandler {
 
     lateinit var playerViewController: PlayerViewController;
     var state = XPlayerValue()
+    var playlists = mutableMapOf<String, Playlist>()
 
     fun init(context: Context, result: MethodChannel.Result): Boolean {
         return try {
@@ -72,6 +74,11 @@ class XPlayer : StreamHandler {
             e
             false
         }
+    }
+
+    fun registerPlaylist(call:MethodCall, result: MethodChannel.Result){
+        val playlistName = call.arguments as String? ?: "default"
+        playlists[playlistName] = Playlist()
     }
 
     fun setPlayerState(newValue: XPlayerValue) {

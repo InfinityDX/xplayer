@@ -33,6 +33,10 @@ abstract class XplayerPlatform extends PlatformInterface {
     throw UnimplementedError('init() has not been implemented.');
   }
 
+  Future<void> registerPlaylist(String playListName) {
+    throw UnimplementedError('registerPlaylist() has not been implemented.');
+  }
+
   Future<void> seekToNext() {
     throw UnimplementedError('seekToNext() has not been implemented.');
   }

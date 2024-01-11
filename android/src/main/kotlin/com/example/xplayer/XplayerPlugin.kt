@@ -48,15 +48,16 @@ class XplayerPlugin : FlutterPlugin, MethodCallHandler {
 
             "xplayer:init" -> xplayer.init(context, result) //d
             "xplayer:claimPlayer" -> xplayer.claimPlayer(call) //d
+            "xplayer:registerPlaylist" -> xplayer.registerPlaylist(call, result)
             "xplayer:seekToNext" -> xplayer.seekToNext() //d
             "xplayer:seekTo" -> xplayer.seekTo(call)
             "xplayer:setPlayBackSpeed" -> xplayer.setPlayBackSpeed(call)
             "xplayer:seekToPreviousMediaItem" -> xplayer.seekToPreviousMediaItem() //d
             "xplayer:addMediaSource" -> xplayer.addMediaSource(call) //d
             "xplayer:addMediaSources" -> xplayer.addMediaSources(call, result) //d
-            "xplayer:setMediaSource" -> xplayer.setMediaSource(call)
-            "xplayer:setMediaSources" -> xplayer.setMediaSources(call, result)
-            "xplayer:changeQuality" -> xplayer.changeQuality(call)
+            "xplayer:setMediaSource" -> xplayer.setMediaSource(call) //d
+            "xplayer:setMediaSources" -> xplayer.setMediaSources(call, result) //d
+            "xplayer:changeQuality" -> xplayer.changeQuality(call) //d
             "xplayer:clearAllMediaSource" -> xplayer.clearAllMediaSource() //d
             "xplayer:play" -> xplayer.play() //d
             "xplayer:pause" -> xplayer.pause() //d
