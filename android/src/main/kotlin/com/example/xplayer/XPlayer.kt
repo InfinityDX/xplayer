@@ -13,7 +13,6 @@ import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.DefaultLoadControl
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.ui.PlayerView
@@ -24,8 +23,6 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.StreamHandler
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 @OptIn(UnstableApi::class)
 class XPlayer : StreamHandler {
@@ -40,9 +37,12 @@ class XPlayer : StreamHandler {
     private lateinit var databaseProvider: StandaloneDatabaseProvider
     private var xPlayerObserver: XPlayerObserver? = null
 
+    private var playlists = mutableMapOf<String, Playlist>(
+        "default" to Playlist()
+    )
+    private var currentPlaylist: String = "default"
     lateinit var playerViewController: PlayerViewController;
     var state = XPlayerValue()
-    var playlists = mutableMapOf<String, Playlist>()
 
     fun init(context: Context, result: MethodChannel.Result): Boolean {
         return try {
@@ -51,9 +51,7 @@ class XPlayer : StreamHandler {
             dataSource = DefaultHttpDataSource.Factory();
             databaseProvider = StandaloneDatabaseProvider(context);
             cache = SimpleCache(
-                context.cacheDir,
-                LeastRecentlyUsedCacheEvictor(MAX_CAHCE_SIZE),
-                databaseProvider
+                context.cacheDir, LeastRecentlyUsedCacheEvictor(MAX_CAHCE_SIZE), databaseProvider
             )
             cacheDataSource =
                 CacheDataSource.Factory().setCache(cache).setUpstreamDataSourceFactory(dataSource)
@@ -62,8 +60,7 @@ class XPlayer : StreamHandler {
                 5000, 10000, 2000, 2000
             ).build()
 
-            player = ExoPlayer.Builder(context)
-                .setLoadControl(loadControl).build()
+            player = ExoPlayer.Builder(context).setLoadControl(loadControl).build()
             player.repeatMode = Player.REPEAT_MODE_ONE
             player.prepare();
             if (xPlayerObserver != null) player.addListener(xPlayerObserver!!)
@@ -76,9 +73,36 @@ class XPlayer : StreamHandler {
         }
     }
 
-    fun registerPlaylist(call:MethodCall, result: MethodChannel.Result){
+    fun registerPlaylist(call: MethodCall, result: MethodChannel.Result) {
         val playlistName = call.arguments as String? ?: "default"
-        playlists[playlistName] = Playlist()
+
+        if (playlists[playlistName] == null) {
+            playlists[playlistName] = Playlist(name = playlistName)
+        }
+    }
+
+    fun changePlaylist(call: MethodCall, result: MethodChannel.Result) {
+        val playlistName = call.arguments as String?
+        if (playlistName !is String) {
+            result.success("playlistName is not String")
+            return
+        }
+
+        if (playlists[playlistName] == null) {
+            result.success("Playlist not exist")
+            return
+        }
+
+        try {
+            val sources = playlists[playlistName]!!.sources.toList()
+            val playIndex = playlists[playlistName]!!.mediaSourceIndex
+
+            player.setMediaSources(sources, playIndex, C.TIME_UNSET)
+            currentPlaylist = playlistName;
+            result.success("Switched to $playlistName")
+        } catch (e: Exception) {
+            result.success("Failed to switch to $playlistName")
+        }
     }
 
     fun setPlayerState(newValue: XPlayerValue) {
@@ -113,11 +137,22 @@ class XPlayer : StreamHandler {
 
 
     fun seekToNext() {
-        player.seekToNext()
+        try {
+            player.seekToNext()
+            val currentIndex = playlists[currentPlaylist]?.mediaSourceIndex ?: 0
+            playlists[currentPlaylist]?.mediaSourceIndex = currentIndex + 1
+        } catch (_: Exception) {
+        }
     }
 
     fun seekToPreviousMediaItem() {
-        player.seekToPreviousMediaItem()
+        try {
+            player.seekToPreviousMediaItem()
+            val currentIndex = playlists[currentPlaylist]?.mediaSourceIndex ?: 0
+            if (currentIndex == 0) return;
+            playlists[currentPlaylist]?.mediaSourceIndex = currentIndex - 1
+        } catch (_: Exception) {
+        }
     }
 
     fun clearAllMediaSource() {
@@ -137,6 +172,8 @@ class XPlayer : StreamHandler {
         val hlsMediaSource = HlsMediaSource.Factory(cacheDataSource)
             .setAllowChunklessPreparation(false)
             .createMediaSource(mediaItem)
+
+        playlists[currentPlaylist]?.sources?.add(hlsMediaSource)
 
         player.addMediaSource(hlsMediaSource)
     }
@@ -162,6 +199,7 @@ class XPlayer : StreamHandler {
 
                 medias.add(hlsSource)
             }
+            playlists[currentPlaylist]?.sources?.addAll(medias)
             player.addMediaSources(medias.toList())
             result.success("Success")
         } catch (e: Exception) {
@@ -177,6 +215,9 @@ class XPlayer : StreamHandler {
         val mediaItem = MediaItem.fromUri(url)
 
         val hlsMediaSource = HlsMediaSource.Factory(cacheDataSource).createMediaSource(mediaItem)
+
+        playlists[currentPlaylist]?.sources?.clear()
+        playlists[currentPlaylist]?.sources?.add(hlsMediaSource)
 
         player.setMediaSource(hlsMediaSource)
     }
@@ -198,7 +239,10 @@ class XPlayer : StreamHandler {
 
                 medias.add(hlsSource)
             }
-            player.addMediaSources(medias.toList())
+            playlists[currentPlaylist]?.sources?.clear()
+            playlists[currentPlaylist]?.sources?.addAll(medias)
+
+            player.setMediaSources(medias.toList())
             result.success("Success")
         } catch (e: Exception) {
             result.success("Fail")

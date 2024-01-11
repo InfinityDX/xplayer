@@ -49,6 +49,7 @@ class XplayerPlugin : FlutterPlugin, MethodCallHandler {
             "xplayer:init" -> xplayer.init(context, result) //d
             "xplayer:claimPlayer" -> xplayer.claimPlayer(call) //d
             "xplayer:registerPlaylist" -> xplayer.registerPlaylist(call, result)
+            "xplayer:changePlaylist" -> xplayer.changePlaylist(call, result)
             "xplayer:seekToNext" -> xplayer.seekToNext() //d
             "xplayer:seekTo" -> xplayer.seekTo(call)
             "xplayer:setPlayBackSpeed" -> xplayer.setPlayBackSpeed(call)

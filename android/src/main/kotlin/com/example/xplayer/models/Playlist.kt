@@ -4,6 +4,6 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
 
 class Playlist(
     var name: String = "",
-    var currentMediaSourceIndex: Int = 0,
-    var sources: List<HlsMediaSource> = mutableListOf<HlsMediaSource>()
+    var mediaSourceIndex: Int = 0,
+    var sources: MutableList<HlsMediaSource> = mutableListOf<HlsMediaSource>()
 )

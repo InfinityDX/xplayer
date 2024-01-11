@@ -16,6 +16,7 @@ class _GeneralPageState extends State<GeneralPage> {
   final xplayer = Xplayer.i;
 
   final url = TextEditingController();
+  final playlist = TextEditingController();
 
   @override
   void initState() {
@@ -62,7 +63,9 @@ class _GeneralPageState extends State<GeneralPage> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          xplayer.addMediaSource(MediaItem(url.text));
+                          xplayer.addMediaSource(
+                            MediaItem(url.text),
+                          );
                           url.text = '';
                         },
                         child: const Text('Add Source'),
@@ -87,6 +90,38 @@ class _GeneralPageState extends State<GeneralPage> {
                     ),
                   ],
                 ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: TextFormField(
+                    controller: playlist,
+                    decoration: const InputDecoration(
+                      hintText: 'Playlist Name',
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          xplayer.changePlaylist(playlist.text);
+                          playlist.text = "";
+                        },
+                        child: const Text('Switch Playlist'),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          xplayer.registerPlaylist(playlist.text);
+                          playlist.text = "";
+                        },
+                        child: const Text('Add Playlist'),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -106,7 +141,6 @@ class _GeneralPageState extends State<GeneralPage> {
                       ),
                     );
                   }
-
                   var quality = playerState.qualities?[index - 1];
 
                   return Center(

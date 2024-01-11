@@ -29,6 +29,7 @@ class Xplayer {
   final List<String> playlistNames = [];
   final List<String> viewIds = [];
   String currentViewId = '';
+  String currentPlaylist = 'default';
 
   void onPlayerValueChanged(dynamic event) {
     if (event is! String) {
@@ -54,6 +55,11 @@ class Xplayer {
     if (playlistNames.contains(playListName)) return;
     playlistNames.add(playListName);
     await XplayerPlatform.instance.registerPlaylist(playListName);
+  }
+
+  Future<void> changePlaylist(String playListName) async {
+    currentPlaylist = playListName;
+    await XplayerPlatform.instance.changePlaylist(playListName);
   }
 
   Future<void> seekToNext() {
