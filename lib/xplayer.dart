@@ -10,17 +10,20 @@ import 'xplayer_platform_interface.dart';
 class Xplayer {
   static const defaultViewType = 'xplayer_viewer_default';
 
-  final _eventChannel = const EventChannel('xplayer_events');
-
   static Xplayer? _instance;
 
   /// Xplayer singleton instance
+  // @Deprecated(
+  //     "Global Instance, Please Initialize your own instance using Xplayer()")
   static Xplayer get i => _instance ??= Xplayer._();
 
   Xplayer._() {
+    init();
     _eventChannel.receiveBroadcastStream().listen(onPlayerValueChanged);
   }
 
+  final _eventChannel = const EventChannel('xplayer_events');
+  final ValueNotifier<bool> initialized = ValueNotifier(false);
   final ValueNotifier<XPlayerValue> state = ValueNotifier(const XPlayerValue());
 
   List<String> viewIds = [];
@@ -36,8 +39,14 @@ class Xplayer {
     state.value = xplayerValue;
   }
 
+  /// Initialize player and its neccessary components in native.
+  ///
+  /// Usaully you don't need to call ```init()``` directly, ```Xplayer.i``` will initialize automatically
+  ///
+  /// You need to init again after calling ```dipose()```
   Future<void> init() async {
-    return XplayerPlatform.instance.init();
+    await XplayerPlatform.instance.init();
+    initialized.value = true;
   }
 
   Future<void> seekToNext() {
@@ -99,7 +108,8 @@ class Xplayer {
     return XplayerPlatform.instance.changeQuality(quality);
   }
 
-  Future<void> dispose() {
-    return XplayerPlatform.instance.dispose();
+  Future<void> dispose() async {
+    initialized.value = false;
+    XplayerPlatform.instance.dispose();
   }
 }

@@ -21,6 +21,7 @@ class XplayerPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var context: Context
     private lateinit var platformRegistry: PlatformViewRegistry
 
+
     private val xplayer = XPlayer()
 
 
@@ -45,7 +46,7 @@ class XplayerPlugin : FlutterPlugin, MethodCallHandler {
         when (call.method) {
             "xplayer:removeView" -> xplayer.playerViewController.removeView(call) //d
 
-            "xplayer:init" -> xplayer.init(context) //d
+            "xplayer:init" -> xplayer.init(context, result) //d
             "xplayer:claimPlayer" -> xplayer.claimPlayer(call) //d
             "xplayer:seekToNext" -> xplayer.seekToNext() //d
             "xplayer:seekTo" -> xplayer.seekTo(call)

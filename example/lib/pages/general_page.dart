@@ -15,7 +15,7 @@ class GeneralPage extends StatefulWidget {
 class _GeneralPageState extends State<GeneralPage> {
   final xplayer = Xplayer.i;
 
-  String url = '';
+  final url = TextEditingController();
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class _GeneralPageState extends State<GeneralPage> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: TextFormField(
-                    onChanged: (val) => url = val,
+                    controller: url,
                     decoration: const InputDecoration(hintText: 'HLS Url'),
                   ),
                 ),
@@ -62,7 +62,10 @@ class _GeneralPageState extends State<GeneralPage> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () => xplayer.addMediaSource(MediaItem(url)),
+                        onPressed: () {
+                          xplayer.addMediaSource(MediaItem(url.text));
+                          url.text = '';
+                        },
                         child: const Text('Add Source'),
                       ),
                     ),

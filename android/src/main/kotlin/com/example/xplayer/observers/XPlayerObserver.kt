@@ -17,7 +17,7 @@ class XPlayerObserver(
     private val xplayer: XPlayer,
     private val flutterEventSink: EventChannel.EventSink?
 ) : Player.Listener {
-    private val RUNNABLE_DELAY_MS = 250L
+    private val POSITION_POLLING_DELAY_MS = 250L
 
     private var player: Player? = null
     private var handlerHasCallback = false
@@ -44,10 +44,10 @@ class XPlayerObserver(
                     )
                     xplayer.setPlayerState(newPlayerState)
                     flutterEventSink?.success(Json.encodeToString(newPlayerState))
-                    handler.postDelayed(this, RUNNABLE_DELAY_MS)
+                    handler.postDelayed(this, POSITION_POLLING_DELAY_MS)
                 }
             }
-            handler.postDelayed(runnable!!, RUNNABLE_DELAY_MS)
+            handler.postDelayed(runnable!!, POSITION_POLLING_DELAY_MS)
             handlerHasCallback = true
         } else {
             if (runnable != null) handler.removeCallbacks(runnable!!)

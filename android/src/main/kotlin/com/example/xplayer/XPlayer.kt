@@ -13,6 +13,7 @@ import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.ui.PlayerView
@@ -29,8 +30,6 @@ import kotlinx.serialization.json.Json
 class XPlayer : StreamHandler {
     private val MAX_CAHCE_SIZE = 100L * 1024 * 1024 // in MB, in this case is 100MB
 
-    private var isInitialized = false;
-
     private lateinit var player: ExoPlayer
     private lateinit var context: Context
 
@@ -43,7 +42,7 @@ class XPlayer : StreamHandler {
     lateinit var playerViewController: PlayerViewController;
     var state = XPlayerValue()
 
-    fun init(context: Context): Boolean {
+    fun init(context: Context, result: MethodChannel.Result): Boolean {
         return try {
             this.context = context
             playerViewController = PlayerViewController(context);
@@ -61,13 +60,15 @@ class XPlayer : StreamHandler {
                 5000, 10000, 2000, 2000
             ).build()
 
-            player = ExoPlayer.Builder(context).setLoadControl(loadControl).build()
+            player = ExoPlayer.Builder(context)
+                .setLoadControl(loadControl).build()
             player.repeatMode = Player.REPEAT_MODE_ONE
             player.prepare();
             if (xPlayerObserver != null) player.addListener(xPlayerObserver!!)
-
+            result.success("XPlayer Initialized")
             true
         } catch (e: Exception) {
+            result.success("XPlayer Failed to Initialized")
             e
             false
         }
@@ -124,7 +125,9 @@ class XPlayer : StreamHandler {
         val url = arg["url"] as String? ?: ""
         val mediaItem = MediaItem.fromUri(url)
 
-        val hlsMediaSource = HlsMediaSource.Factory(cacheDataSource).createMediaSource(mediaItem)
+        val hlsMediaSource = HlsMediaSource.Factory(cacheDataSource)
+            .setAllowChunklessPreparation(false)
+            .createMediaSource(mediaItem)
 
         player.addMediaSource(hlsMediaSource)
     }
@@ -141,7 +144,9 @@ class XPlayer : StreamHandler {
                 it as Map<*, *>
                 val url = it["url"] as String? ?: ""
                 val mediaItem = MediaItem.fromUri(url)
-                val hlsSource = HlsMediaSource.Factory(cacheDataSource).createMediaSource(mediaItem)
+                val hlsSource = HlsMediaSource.Factory(cacheDataSource)
+                    .setAllowChunklessPreparation(false)
+                    .createMediaSource(mediaItem)
 
                 medias.add(hlsSource)
             }
@@ -176,7 +181,8 @@ class XPlayer : StreamHandler {
                 it as Map<*, *>
                 val url = it["url"] as String? ?: ""
                 val mediaItem = MediaItem.fromUri(url)
-                val hlsSource = HlsMediaSource.Factory(cacheDataSource).createMediaSource(mediaItem)
+                val hlsSource = HlsMediaSource.Factory(cacheDataSource)
+                    .createMediaSource(mediaItem)
 
                 medias.add(hlsSource)
             }
@@ -189,6 +195,7 @@ class XPlayer : StreamHandler {
 
     fun dispose(result: MethodChannel.Result?) {
         try {
+            setPlayerState(XPlayerValue())
             player.stop()
             player.release()
             result?.success("XPlayer Disposed")
@@ -200,15 +207,18 @@ class XPlayer : StreamHandler {
 
     fun changeQuality(call: MethodCall) {
         val quality = call.arguments as Map<*, *>?
-        if(quality == null) {
-            player.trackSelectionParameters = player.trackSelectionParameters.buildUpon().clearVideoSizeConstraints().build()
+        if (quality == null) {
+            player.trackSelectionParameters =
+                player.trackSelectionParameters.buildUpon().clearVideoSizeConstraints().build()
             return
         }
 
         val height = quality["height"] as Int? ?: return
         val width = quality["width"] as Int? ?: return
 
-       player.trackSelectionParameters = player.trackSelectionParameters.buildUpon().setMaxVideoSize(width, height).setMinVideoSize(width, height).build()
+        player.trackSelectionParameters =
+            player.trackSelectionParameters.buildUpon().setMaxVideoSize(width, height)
+                .setMinVideoSize(width, height).build()
     }
 
     private fun test() {
