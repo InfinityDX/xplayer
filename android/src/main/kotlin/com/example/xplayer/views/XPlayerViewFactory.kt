@@ -15,4 +15,6 @@ class XPlayerViewFactory(private val xplayer: XPlayer) : PlatformViewFactory(Sta
         }catch (_: Exception){/* */}
         return XPlayerView(xplayer,context, viewId, creationParam);
     }
+
+
 }

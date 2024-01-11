@@ -5,11 +5,11 @@
 
 package com.example.xplayer.models
 
-import androidx.annotation.Nullable
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class XPlayerValue (
+     val isLoading: Boolean = true,
      val position: Long = 0L,
      val bufferedPosition: Long = 0L,
      val playbackSpeed: Float = 0F,

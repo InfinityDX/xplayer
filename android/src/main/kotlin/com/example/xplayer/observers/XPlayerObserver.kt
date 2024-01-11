@@ -24,10 +24,21 @@ class XPlayerObserver(
     private var handler: Handler = Handler(Looper.getMainLooper())
     private var runnable: Runnable? = null
 
+    // Player State (IDLE|BUFFERING|READY|ENDED
     override fun onEvents(player: Player, events: Player.Events) {
         if (this.player == null) this.player = player
         super.onEvents(player, events)
     }
+
+    override fun onIsLoadingChanged(isLoading: Boolean) {
+        val newState = xplayer.state.copy(isLoading = isLoading)
+        xplayer.setPlayerState(newState)
+        flutterEventSink?.success(Json.encodeToString(newState))
+        Log.d("ExoPlayer", "onIsLoadingChanged: $newState")
+        super.onIsLoadingChanged(isLoading)
+    }
+
+
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         if (player == null) return

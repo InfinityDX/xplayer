@@ -28,10 +28,11 @@ class XPlayerView(
     }
 
     init {
-        playerView = PlayerView(context)
+        val viewId = creationParams?.get("viewId") as String? ?: id.toString()
+        playerView = xplayer.playerViewController.getPlayerViewById(viewId) ?: PlayerView(context)
+
         playerView.useController = false
         playerView.setShutterBackgroundColor(Color.TRANSPARENT)
-        val viewId = creationParams?.get("viewId") as String? ?: id.toString()
         xplayer.playerViewController.registerView(viewId, playerView)
     }
 }

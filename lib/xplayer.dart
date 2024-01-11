@@ -22,7 +22,7 @@ class Xplayer {
     init();
   }
 
-  final _eventChannel = const EventChannel('xplayer_events');
+  final _eventChannel = const EventChannel('xplayer_events:state');
 
   final ValueNotifier<bool> initialized = ValueNotifier(false);
   final ValueNotifier<XPlayerValue> state = ValueNotifier(const XPlayerValue());
@@ -36,9 +36,11 @@ class Xplayer {
       log('Event Data from native is not type String', name: "xplayer_events");
       return;
     }
-    log(event, name: 'Xplayer');
-    var xplayerValue = XPlayerValue.fromJson(event);
-    state.value = xplayerValue;
+    var eventValue = XPlayerValue.fromJson(event);
+    var newValue = state.value.copyWith(eventValue);
+    log('Position: ${newValue.position} | Buffered: ${newValue.bufferedPosition}\nisLoading: ${newValue.isLoading}',
+        name: 'Xplayer');
+    state.value = newValue;
   }
 
   /// Initialize player and its neccessary components in native.

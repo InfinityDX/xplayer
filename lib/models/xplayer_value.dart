@@ -1,30 +1,20 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class XPlayerValue {
-  final int? positon;
+  final bool? isLoading;
+  final int? position;
   final int? bufferedPosition;
   final double? playbackSpeed;
   final List<Quality>? qualities;
 
   const XPlayerValue({
-    this.positon,
-    this.bufferedPosition,
-    this.playbackSpeed,
-    this.qualities,
+    this.isLoading = true,
+    this.position = 0,
+    this.bufferedPosition = 0,
+    this.playbackSpeed = 0,
+    this.qualities = const [],
   });
-
-  XPlayerValue copyWith({
-    int? positon,
-    int? bufferedPosition,
-    double? playbackSpeed,
-    List<Quality>? qualities,
-  }) =>
-      XPlayerValue(
-        positon: positon ?? this.positon,
-        bufferedPosition: bufferedPosition ?? this.bufferedPosition,
-        playbackSpeed: playbackSpeed ?? this.playbackSpeed,
-        qualities: qualities ?? this.qualities,
-      );
 
   factory XPlayerValue.fromJson(String str) =>
       XPlayerValue.fromMap(json.decode(str));
@@ -32,7 +22,8 @@ class XPlayerValue {
   String toJson() => json.encode(toMap());
 
   factory XPlayerValue.fromMap(Map<String, dynamic> json) => XPlayerValue(
-        positon: json["positon"],
+        isLoading: json["isLoading"],
+        position: json["position"],
         bufferedPosition: json["bufferedPosition"],
         playbackSpeed: json["playbackSpeed"]?.toDouble(),
         qualities: json["qualities"] == null
@@ -42,13 +33,24 @@ class XPlayerValue {
       );
 
   Map<String, dynamic> toMap() => {
-        "positon": positon,
+        "isLoading": isLoading,
+        "position": position,
         "bufferedPosition": bufferedPosition,
         "playbackSpeed": playbackSpeed,
         "qualities": qualities == null
             ? []
             : List<dynamic>.from(qualities!.map((x) => x.toMap())),
       };
+
+  XPlayerValue copyWith(XPlayerValue value) {
+    return XPlayerValue(
+      isLoading: value.isLoading ?? isLoading,
+      position: value.position ?? position,
+      bufferedPosition: value.bufferedPosition ?? bufferedPosition,
+      playbackSpeed: value.playbackSpeed ?? playbackSpeed,
+      qualities: value.qualities ?? qualities,
+    );
+  }
 }
 
 class Quality {
@@ -59,15 +61,6 @@ class Quality {
     this.width,
     this.height,
   });
-
-  Quality copyWith({
-    int? width,
-    int? height,
-  }) =>
-      Quality(
-        width: width ?? this.width,
-        height: height ?? this.height,
-      );
 
   factory Quality.fromJson(String str) => Quality.fromMap(json.decode(str));
 

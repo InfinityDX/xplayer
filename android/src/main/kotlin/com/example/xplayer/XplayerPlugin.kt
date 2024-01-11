@@ -21,9 +21,7 @@ class XplayerPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var context: Context
     private lateinit var platformRegistry: PlatformViewRegistry
 
-
     private val xplayer = XPlayer()
-
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
@@ -31,7 +29,7 @@ class XplayerPlugin : FlutterPlugin, MethodCallHandler {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "xplayer")
         channel.setMethodCallHandler(this)
 
-        eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "xplayer_events")
+        eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "xplayer_events:state")
         eventChannel.setStreamHandler(xplayer)
 
         platformRegistry = flutterPluginBinding.platformViewRegistry
@@ -51,8 +49,8 @@ class XplayerPlugin : FlutterPlugin, MethodCallHandler {
             "xplayer:registerPlaylist" -> xplayer.registerPlaylist(call, result)
             "xplayer:changePlaylist" -> xplayer.changePlaylist(call, result)
             "xplayer:seekToNext" -> xplayer.seekToNext() //d
-            "xplayer:seekTo" -> xplayer.seekTo(call)
-            "xplayer:setPlayBackSpeed" -> xplayer.setPlayBackSpeed(call)
+            "xplayer:seekTo" -> xplayer.seekTo(call) //d
+            "xplayer:setPlayBackSpeed" -> xplayer.setPlayBackSpeed(call) //d
             "xplayer:seekToPreviousMediaItem" -> xplayer.seekToPreviousMediaItem() //d
             "xplayer:addMediaSource" -> xplayer.addMediaSource(call) //d
             "xplayer:addMediaSources" -> xplayer.addMediaSources(call, result) //d

@@ -1,11 +1,10 @@
 package com.example.xplayer
 
-import android.content.Context
 import android.util.Log
 import androidx.media3.ui.PlayerView
 import io.flutter.plugin.common.MethodCall
 
-class PlayerViewController(private var context: Context) {
+class PlayerViewController() {
     private var playerViews = mutableMapOf<String, PlayerView>()
     private var currentPlayerViewId: String = "";
     fun getCurrentView(): PlayerView? {

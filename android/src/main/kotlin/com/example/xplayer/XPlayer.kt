@@ -41,13 +41,12 @@ class XPlayer : StreamHandler {
         "default" to Playlist()
     )
     private var currentPlaylist: String = "default"
-    lateinit var playerViewController: PlayerViewController;
+     var playerViewController: PlayerViewController = PlayerViewController()
     var state = XPlayerValue()
 
     fun init(context: Context, result: MethodChannel.Result): Boolean {
         return try {
             this.context = context
-            playerViewController = PlayerViewController(context);
             dataSource = DefaultHttpDataSource.Factory();
             databaseProvider = StandaloneDatabaseProvider(context);
             cache = SimpleCache(
@@ -76,8 +75,14 @@ class XPlayer : StreamHandler {
     fun registerPlaylist(call: MethodCall, result: MethodChannel.Result) {
         val playlistName = call.arguments as String? ?: "default"
 
+        if(playlistName.isEmpty()) {
+            result.success("Playlist name cannot be empty")
+            return
+        }
+
         if (playlists[playlistName] == null) {
             playlists[playlistName] = Playlist(name = playlistName)
+            result.success("Playlist $playlistName Added")
         }
     }
 
