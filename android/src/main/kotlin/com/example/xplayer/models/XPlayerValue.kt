@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class XPlayerValue (
-     val isLoading: Boolean = true,
+     val playerState: Int = 1,
      val position: Long = 0L,
      val bufferedPosition: Long = 0L,
      val playbackSpeed: Float = 0F,

@@ -3,11 +3,14 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:xplayer/constants/player_state.dart';
 import 'package:xplayer/xplayer.dart';
 
 class XPlayerViewer extends StatefulWidget {
   final bool autoClaimPlayer;
-  const XPlayerViewer({this.autoClaimPlayer = false, super.key});
+  final String thumbnailUrl;
+  const XPlayerViewer(
+      {this.thumbnailUrl = '', this.autoClaimPlayer = false, super.key});
 
   @override
   State<XPlayerViewer> createState() => _XPlayerViewerState();
@@ -18,6 +21,8 @@ class _XPlayerViewerState extends State<XPlayerViewer>
   late String viewId;
 
   bool showPlaceHolder = false;
+
+  int playerState = PlayerState.IDLE;
 
   @override
   void initState() {
@@ -30,14 +35,24 @@ class _XPlayerViewerState extends State<XPlayerViewer>
         Xplayer.i.claimPlayer(viewId);
       });
     }
+    Xplayer.i.state.addListener(playerStateListener);
 
     super.initState();
+  }
+
+  void playerStateListener() {
+    if (playerState != Xplayer.i.state.value.playerState) {
+      setState(() {
+        playerState = Xplayer.i.state.value.playerState ?? PlayerState.IDLE;
+      });
+    }
   }
 
   @override
   void dispose() {
     log("Disposed");
     WidgetsBinding.instance.removeObserver(this);
+    Xplayer.i.state.removeListener(playerStateListener);
     super.dispose();
   }
 
@@ -55,11 +70,27 @@ class _XPlayerViewerState extends State<XPlayerViewer>
         // }
 
         /// Virtual View
-        return AndroidView(
-          viewType: Xplayer.defaultViewType,
-          layoutDirection: TextDirection.ltr,
-          creationParams: {'viewId': viewId},
-          creationParamsCodec: const StandardMessageCodec(),
+        return Stack(
+          children: [
+            AndroidView(
+              viewType: Xplayer.defaultViewType,
+              layoutDirection: TextDirection.ltr,
+              creationParams: {'viewId': viewId},
+              creationParamsCodec: const StandardMessageCodec(),
+            ),
+            if (playerState == PlayerState.IDLE)
+              Center(
+                child: Image.network(
+                    'https://wrs.youtubes.fan/yt_core/efd4c487-3038-486d-b641-65bdc4a85413_1704436943269.png'),
+              ),
+            if (playerState == PlayerState.BUFFERING)
+              Center(
+                child: CircularProgressIndicator(
+                  color: Colors.red[800]!,
+                  strokeCap: StrokeCap.round,
+                ),
+              ),
+          ],
         );
 
       /// Hybrid Compositon

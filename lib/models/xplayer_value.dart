@@ -2,14 +2,14 @@
 import 'dart:convert';
 
 class XPlayerValue {
-  final bool? isLoading;
+  final int? playerState;
   final int? position;
   final int? bufferedPosition;
   final double? playbackSpeed;
   final List<Quality>? qualities;
 
   const XPlayerValue({
-    this.isLoading = true,
+    this.playerState = 1,
     this.position = 0,
     this.bufferedPosition = 0,
     this.playbackSpeed = 0,
@@ -22,7 +22,7 @@ class XPlayerValue {
   String toJson() => json.encode(toMap());
 
   factory XPlayerValue.fromMap(Map<String, dynamic> json) => XPlayerValue(
-        isLoading: json["isLoading"],
+        playerState: json["playerState"],
         position: json["position"],
         bufferedPosition: json["bufferedPosition"],
         playbackSpeed: json["playbackSpeed"]?.toDouble(),
@@ -33,7 +33,7 @@ class XPlayerValue {
       );
 
   Map<String, dynamic> toMap() => {
-        "isLoading": isLoading,
+        "playerState": playerState,
         "position": position,
         "bufferedPosition": bufferedPosition,
         "playbackSpeed": playbackSpeed,
@@ -44,7 +44,7 @@ class XPlayerValue {
 
   XPlayerValue copyWith(XPlayerValue value) {
     return XPlayerValue(
-      isLoading: value.isLoading ?? isLoading,
+      playerState: value.playerState ?? playerState,
       position: value.position ?? position,
       bufferedPosition: value.bufferedPosition ?? bufferedPosition,
       playbackSpeed: value.playbackSpeed ?? playbackSpeed,

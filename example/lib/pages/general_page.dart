@@ -27,7 +27,7 @@ class _GeneralPageState extends State<GeneralPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Plugin example app'),
+        title: const Text('ExoPlayer for HLS'),
       ),
       body: CustomScrollView(
         slivers: [

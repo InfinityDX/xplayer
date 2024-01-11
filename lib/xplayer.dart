@@ -38,7 +38,7 @@ class Xplayer {
     }
     var eventValue = XPlayerValue.fromJson(event);
     var newValue = state.value.copyWith(eventValue);
-    log('Position: ${newValue.position} | Buffered: ${newValue.bufferedPosition}\nisLoading: ${newValue.isLoading}',
+    log('Position: ${newValue.position} | Buffered: ${newValue.bufferedPosition}\nisLoading: ${newValue.playerState}',
         name: 'Xplayer');
     state.value = newValue;
   }

@@ -284,6 +284,7 @@ class XPlayer : StreamHandler {
 
     private fun test() {
         player.trackSelectionParameters.buildUpon().clearVideoSizeConstraints()
+        Player.STATE_BUFFERING
     }
 
     override fun onListen(arguments: Any?, eventSink: EventChannel.EventSink?) {

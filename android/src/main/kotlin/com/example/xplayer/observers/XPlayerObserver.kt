@@ -18,6 +18,7 @@ class XPlayerObserver(
     private val flutterEventSink: EventChannel.EventSink?
 ) : Player.Listener {
     private val POSITION_POLLING_DELAY_MS = 250L
+    private val SHOW_LOADING_OFFSET_MS = 750L // Duration between position and bufferedPositionÍ
 
     private var player: Player? = null
     private var handlerHasCallback = false
@@ -30,14 +31,15 @@ class XPlayerObserver(
         super.onEvents(player, events)
     }
 
-    override fun onIsLoadingChanged(isLoading: Boolean) {
-        val newState = xplayer.state.copy(isLoading = isLoading)
-        xplayer.setPlayerState(newState)
-        flutterEventSink?.success(Json.encodeToString(newState))
-        Log.d("ExoPlayer", "onIsLoadingChanged: $newState")
-        super.onIsLoadingChanged(isLoading)
+    override fun onPlaybackStateChanged(playbackState: Int) {
+        val newPlayerState = xplayer.state.copy(
+            playerState = playbackState
+        )
+        xplayer.setPlayerState(newPlayerState)
+        flutterEventSink?.success(Json.encodeToString(newPlayerState))
+        super.onPlaybackStateChanged(playbackState)
+        Player.STATE_BUFFERING
     }
-
 
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -45,7 +47,6 @@ class XPlayerObserver(
 
         if (isPlaying) {
             if (handlerHasCallback) return
-
             runnable = object : Runnable {
                 override fun run() {
                     val newPlayerState = xplayer.state.copy(
