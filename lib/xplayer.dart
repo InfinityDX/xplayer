@@ -18,8 +18,8 @@ class Xplayer {
   static Xplayer get i => _instance ??= Xplayer._();
 
   Xplayer._() {
-    init();
     _eventChannel.receiveBroadcastStream().listen(onPlayerValueChanged);
+    init();
   }
 
   final _eventChannel = const EventChannel('xplayer_events');
@@ -41,7 +41,7 @@ class Xplayer {
 
   /// Initialize player and its neccessary components in native.
   ///
-  /// Usaully you don't need to call ```init()``` directly, ```Xplayer.i``` will initialize automatically
+  /// Usaully you don't need to call ```init()``` directly, getting ```Xplayer.i``` will initialize automatically
   ///
   /// You need to init again after calling ```dipose()```
   Future<void> init() async {

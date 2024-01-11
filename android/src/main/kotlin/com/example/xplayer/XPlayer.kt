@@ -123,6 +123,8 @@ class XPlayer : StreamHandler {
         if (arg !is HashMap<*, *>) return;
 
         val url = arg["url"] as String? ?: ""
+        if (url.isEmpty()) return
+
         val mediaItem = MediaItem.fromUri(url)
 
         val hlsMediaSource = HlsMediaSource.Factory(cacheDataSource)
@@ -140,9 +142,12 @@ class XPlayer : StreamHandler {
         }
         try {
             val medias = mutableListOf<HlsMediaSource>();
-            arg.forEach {
+
+            arg.forEach loop@ {
                 it as Map<*, *>
                 val url = it["url"] as String? ?: ""
+                if (url.isEmpty()) return@loop
+
                 val mediaItem = MediaItem.fromUri(url)
                 val hlsSource = HlsMediaSource.Factory(cacheDataSource)
                     .setAllowChunklessPreparation(false)

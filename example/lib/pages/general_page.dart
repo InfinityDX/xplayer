@@ -19,7 +19,6 @@ class _GeneralPageState extends State<GeneralPage> {
 
   @override
   void initState() {
-    xplayer.init();
     super.initState();
   }
 
