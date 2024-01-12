@@ -22,11 +22,18 @@ class _XPlayerViewerState extends State<XPlayerViewer>
 
   bool showPlaceHolder = false;
 
+  Widget thumbnail = const Offstage();
+
   int playerState = PlayerState.IDLE;
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+
+    if (widget.thumbnailUrl.isNotEmpty) {
+      thumbnail = Image.network(widget.thumbnailUrl);
+    }
+
     viewId = UniqueKey().toString();
     Xplayer.i.viewIds.add(viewId);
 
@@ -78,11 +85,7 @@ class _XPlayerViewerState extends State<XPlayerViewer>
               creationParams: {'viewId': viewId},
               creationParamsCodec: const StandardMessageCodec(),
             ),
-            if (playerState == PlayerState.IDLE)
-              Center(
-                child: Image.network(
-                    'https://wrs.youtubes.fan/yt_core/efd4c487-3038-486d-b641-65bdc4a85413_1704436943269.png'),
-              ),
+            if (playerState == PlayerState.IDLE) Center(child: thumbnail),
             if (playerState == PlayerState.BUFFERING)
               Center(
                 child: CircularProgressIndicator(
