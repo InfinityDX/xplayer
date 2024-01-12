@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:xplayer_example/pages/general_page.dart';
-import 'package:xplayer_example/pages/shorts_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
