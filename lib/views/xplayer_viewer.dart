@@ -121,13 +121,13 @@ class _XPlayerViewerState extends State<XPlayerViewer>
       //       ..create();
       //   },
       // );
-      // case TargetPlatform.iOS:
-      //   return UiKitView(
-      //     viewType: viewType,
-      //     layoutDirection: TextDirection.ltr,
-      //     creationParams: const {},
-      //     creationParamsCodec: const StandardMessageCodec(),
-      //   );
+      case TargetPlatform.iOS:
+        return const UiKitView(
+          viewType: Xplayer.defaultViewType,
+          layoutDirection: TextDirection.ltr,
+          creationParams: {},
+          creationParamsCodec: StandardMessageCodec(),
+        );
       default:
         return const Center(
           child: Text(
