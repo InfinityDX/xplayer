@@ -97,7 +97,7 @@ class Xplayer {
   }
 
   Future<void> clearMediaSource() async {
-    return XplayerPlatform.instance.clearMediaSource();
+    return XplayerPlatform.instance.clearAllMediaSource();
   }
 
   Future<void> removeView(String viewId) async {

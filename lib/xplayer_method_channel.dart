@@ -81,8 +81,8 @@ class MethodChannelXplayer implements XplayerPlatform {
   }
 
   @override
-  Future<void> clearMediaSource() async {
-    await methodChannel.invokeMethod('xplayer:clearMediaSource');
+  Future<void> clearAllMediaSource() async {
+    await methodChannel.invokeMethod('xplayer:clearAllMediaSource');
   }
 
   @override
