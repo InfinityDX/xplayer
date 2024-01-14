@@ -10,19 +10,38 @@ import AVFoundation
 import Flutter
 
 class XPlayerObserver: NSObject {
-    var player: AVPlayer
-    var flutterEventSink: FlutterEventSink
+    private var xplayer: XPlayer
+    private var flutterEventSink: FlutterEventSink
+    private var kvoObserver: NSKeyValueObservation?
     
-    init(player: AVPlayer, flutterEventSink: @escaping FlutterEventSink) {
-        self.player = player
+    init(xplayer: XPlayer, flutterEventSink: @escaping FlutterEventSink) {
+        self.xplayer = xplayer
         self.flutterEventSink = flutterEventSink
     }
     
     func startObservation(){
-        player.addPeriodicTimeObserver(forInterval: CMTime(value: 750, timescale: 1000), queue: DispatchQueue.main, using: { time in
-            print("Time: \(self.player.currentTime().seconds)")
+        xplayer.player.addPeriodicTimeObserver(forInterval: CMTime(value: 750, timescale: 1000), queue: DispatchQueue.main, using: { time in
+            
+            let state = self.xplayer.state
+            state.position = Int(self.xplayer.player.currentTime().seconds * 1000)
+            state.playbackSpeed = self.xplayer.player.rate
+
+            self.emitState(state: state)
         }
         )
     }
     
+    func dispose(){
+        kvoObserver?.invalidate()
+    }
+    
+    func emitState(state: XPlayerValue){
+        do {
+            let json = try JSONEncoder().encode(state)
+            let jsonString = String(data: json, encoding: .utf8)
+            self.flutterEventSink(jsonString)
+        }catch{
+            print("Could not encode XplayerValue to Json in Observer")
+        }
+    }
 }

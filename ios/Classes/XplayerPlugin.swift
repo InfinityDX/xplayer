@@ -47,8 +47,7 @@ public class XplayerPlugin: NSObject, FlutterPlugin {
             xplayer.seekToPreviousMediaItem(call: call, result: result)
             
         case "xplayer:setPlayBackSpeed":
-            xplayer.setPlayBackSpeed()
-            result("setPlayBackSpeed")
+            xplayer.setPlayBackSpeed(call: call, result: result)
             
         case "xplayer:addMediaSource":
             xplayer.addMediaSource(call: call, result: result)

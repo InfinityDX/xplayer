@@ -13,6 +13,10 @@ import AVKit
 class XPlayer:NSObject, FlutterStreamHandler{
     private let MAX_CAHCE_SIZE = 100 * 1024 * 1024 // in MB, in this case is 100MB
     private var playerObserver: XPlayerObserver?
+    private var flutterEventSink: FlutterEventSink?
+    private var isLooping = true
+    
+    var state = XPlayerValue()
     
     
     var player: AVPlayer = AVPlayer()
@@ -21,10 +25,19 @@ class XPlayer:NSObject, FlutterStreamHandler{
     var currentPlaylist: String = "default"
     
     
+    func setPlayerState(newValue: XPlayerValue) {
+        state = newValue
+    }
+    
     func initilize(result: FlutterResult){
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-        playerObserver?.startObservation()
-        
+        //        playerObserver?.startObservation()
+        let observer = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.player.currentItem, queue: .main) { [weak self] _ in
+            if(self?.isLooping ?? false){
+                self?.player.seek(to: CMTime.zero)
+                self?.player.play()
+            }
+        }
         result("XPlayer Initialized")
     }
     
@@ -125,8 +138,12 @@ class XPlayer:NSObject, FlutterStreamHandler{
         player.play()
     }
     
-    func setPlayBackSpeed(){
-        
+    func setPlayBackSpeed(call: FlutterMethodCall, result: FlutterResult){
+        guard let playbackSpeed = call.arguments as? Double  else{
+            result("Playback Speed is not Double")
+            return
+        }
+        player.rate = Float(playbackSpeed);
     }
     
     func addMediaSource(call: FlutterMethodCall, result: FlutterResult){
@@ -238,7 +255,6 @@ class XPlayer:NSObject, FlutterStreamHandler{
             return
         }
         
-        
         player.replaceCurrentItem(with: sources[currentPlayIndex])
         player.play()
     }
@@ -250,11 +266,19 @@ class XPlayer:NSObject, FlutterStreamHandler{
     }
     
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        playerObserver = XPlayerObserver(player: player, flutterEventSink: events)
+        
+        flutterEventSink = events
+        
+        playerObserver = XPlayerObserver(xplayer: self, flutterEventSink: events)
+        playerObserver?.startObservation()
+        
         return nil
     }
     
     func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        playerObserver?.dispose()
+        flutterEventSink = nil
+        
         return nil
     }
     
