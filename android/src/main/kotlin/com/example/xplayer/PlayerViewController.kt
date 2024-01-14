@@ -36,7 +36,7 @@ class PlayerViewController() {
          currentPlayerViewId = id
     }
 
-    fun getPlayerViewById(id: String): PlayerView?{
+    fun getPlayerViewById(id: String): PlayerView? {
         return playerViews[id];
     }
 }

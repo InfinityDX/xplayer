@@ -122,11 +122,11 @@ class _XPlayerViewerState extends State<XPlayerViewer>
       //   },
       // );
       case TargetPlatform.iOS:
-        return const UiKitView(
+        return UiKitView(
           viewType: Xplayer.defaultViewType,
           layoutDirection: TextDirection.ltr,
-          creationParams: {},
-          creationParamsCodec: StandardMessageCodec(),
+          creationParams: {'viewId': viewId},
+          creationParamsCodec: const StandardMessageCodec(),
         );
       default:
         return const Center(

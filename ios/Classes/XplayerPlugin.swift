@@ -7,72 +7,93 @@ public class XplayerPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
         let instance = XplayerPlugin()
         
+        let channel = FlutterMethodChannel(name: "xplayer", binaryMessenger: registrar.messenger())
+        registrar.addMethodCallDelegate(instance, channel: channel)
+        
         let eventChannel = FlutterEventChannel(name: "xplayer_events:state", binaryMessenger: registrar.messenger())
         eventChannel.setStreamHandler(instance.xplayer)
         
         
-        let channel = FlutterMethodChannel(name: "xplayer", binaryMessenger: registrar.messenger())
-        registrar.addMethodCallDelegate(instance, channel: channel)
-        
-        let xplayerViewFactory = XPlayerViewFactory(messenger: registrar.messenger())
+        let xplayerViewFactory = XPlayerViewFactory(xplayer: instance.xplayer, messenger: registrar.messenger())
         registrar.register(xplayerViewFactory, withId: "xplayer_viewer_default")
     }
     
-    public func handle(_ call: FlutterMethodCall,_ result: @escaping FlutterResult) {
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        print("CallMethod" + call.method)
         switch call.method {
         case "getPlatformVersion":
             result("iOS fdfd" + UIDevice.current.systemVersion)
+            
         case "xplayer:init":
-            result("init")
-            break
+            xplayer.initilize(result: result)
+            
         case "xplayer:claimPlayer":
-            result("claimPlayer")
-            break
+            xplayer.claimPlayer(call: call, result: result)
+            
         case "xplayer:registerPlaylist":
+            xplayer.registerPlaylist()
             result("registerPlaylist")
-            break
+            
         case "xplayer:changePlaylist":
+            xplayer.changePlaylist()
             result("changePlaylist")
-            break
+            
         case "xplayer:seekToNext":
+            xplayer.seekToNext()
             result("seekToNext")
-            break
+            
         case "xplayer:seekTo":
+            xplayer.seekTo()
             result("seekTo")
-            break
+            
         case "xplayer:setPlayBackSpeed":
+            xplayer.setPlayBackSpeed()
             result("setPlayBackSpeed")
-            break
+            
         case "xplayer:seekToPreviousMediaItem":
+            xplayer.seekToPreviousMediaItem()
             result("seekToPreviousMediaItem")
-            break
+            
         case "xplayer:addMediaSource":
+            xplayer.addMediaSource(call: call, result: result)
             result("addMediaSource")
-            break
+            
         case "xplayer:addMediaSources":
+            xplayer.addMediaSources()
             result("addMediaSources")
-            break
+            
         case "xplayer:setMediaSource":
+            xplayer.setMediaSource()
             result("setMediaSource")
-            break
+            
         case "xplayer:setMediaSources":
+            xplayer.setMediaSources()
             result("setMediaSources")
-            break
+            
+        case "xplayer:clearMediaSource":
+            xplayer.clearMediaSource()
+            result("clearMediaSource")
+            
         case "xplayer:changeQuality":
+            xplayer.changeQuality()
             result("changeQuality")
-            break
+            
         case "xplayer:clearAllMediaSource":
+            xplayer.clearAllMediaSource()
             result("clearAllMediaSource")
-            break
+            
         case "xplayer:play":
+            xplayer.play()
             result("play")
-            break
+            
         case "xplayer:pause":
+            xplayer.pause()
             result("pause")
-            break
+            
         case "xplayer:dispose":
+            xplayer.dispose()
             result("dispose")
-            break
+            
         default:
             result(FlutterMethodNotImplemented)
         }

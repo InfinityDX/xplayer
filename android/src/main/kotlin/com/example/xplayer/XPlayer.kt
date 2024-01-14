@@ -41,7 +41,7 @@ class XPlayer : StreamHandler {
         "default" to Playlist()
     )
     private var currentPlaylist: String = "default"
-     var playerViewController: PlayerViewController = PlayerViewController()
+    var playerViewController: PlayerViewController = PlayerViewController()
     var state = XPlayerValue()
 
     fun init(context: Context, result: MethodChannel.Result): Boolean {
@@ -75,7 +75,7 @@ class XPlayer : StreamHandler {
     fun registerPlaylist(call: MethodCall, result: MethodChannel.Result) {
         val playlistName = call.arguments as String? ?: "default"
 
-        if(playlistName.isEmpty()) {
+        if (playlistName.isEmpty()) {
             result.success("Playlist name cannot be empty")
             return
         }
@@ -192,7 +192,7 @@ class XPlayer : StreamHandler {
         try {
             val medias = mutableListOf<HlsMediaSource>();
 
-            arg.forEach loop@ {
+            arg.forEach loop@{
                 it as Map<*, *>
                 val url = it["url"] as String? ?: ""
                 if (url.isEmpty()) return@loop

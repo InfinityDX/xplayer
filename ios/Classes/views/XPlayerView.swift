@@ -7,33 +7,62 @@
 
 import Flutter
 import UIKit
+import AVKit
+import AVFoundation
 
 class XPlayerView: NSObject, FlutterPlatformView {
-    private var _view: UIView
-
-        init(
-            frame: CGRect,
-            viewIdentifier viewId: Int64,
-            arguments args: Any?,
-            binaryMessenger messenger: FlutterBinaryMessenger?
-        ) {
-            _view = UIView()
-            super.init()
-            // iOS views can be created here
-            createNativeView(view: _view)
+    private var playerView: PlayerView
+    
+    init(
+        xplayer: XPlayer,
+        frame: CGRect,
+        viewIdentifier defaultViewId: Int64,
+        arguments args: Any?,
+        binaryMessenger messenger: FlutterBinaryMessenger?
+    ) {
+        var viewId = String(defaultViewId)
+        if(args is Dictionary<String, String>) {
+            viewId = (args as! Dictionary<String, String>)["viewId"] ?? viewId
         }
+        
+        let existingView = xplayer.playerViewController.getPlayerViewById(id: viewId)
+        
+        playerView = existingView ?? PlayerView()
+        
+        xplayer.playerViewController.registerView(id: viewId,view: playerView)
+        
+        super.init()
+    }
+    
+    func view() -> UIView {
+        return playerView
+    }
+}
 
-        func view() -> UIView {
-            return _view
-        }
 
-        func createNativeView(view _view: UIView){
-            _view.backgroundColor = UIColor.systemRed
-            let nativeLabel = UILabel()
-            nativeLabel.text = "Label"
-            nativeLabel.textColor = UIColor.white
-            nativeLabel.textAlignment = .center
-            nativeLabel.frame = CGRect(x: 0, y: 0, width: 180, height: 48.0)
-            _view.addSubview(nativeLabel)
-        }
+class PlayerView : UIView{
+    let _nativeLabel = UILabel()
+    let playerLayer = AVPlayerLayer()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.layer.addSublayer(playerLayer)
+    }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    override func layoutSubviews() {
+        playerLayer.frame = self.frame
+        super.layoutSubviews()
+    }
+    // Override the property to make AVPlayerLayer the view's backing layer.
+    override static var layerClass: AnyClass { AVPlayerLayer.self }
+    
+    // The associated player object.
+    var player: AVPlayer? {
+        get { playerLayer.player }
+        set { playerLayer.player = newValue }
+    }
+    
 }
