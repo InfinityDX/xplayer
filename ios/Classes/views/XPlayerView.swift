@@ -41,11 +41,12 @@ class XPlayerView: NSObject, FlutterPlatformView {
 
 
 class PlayerView : UIView{
-    let _nativeLabel = UILabel()
     let playerLayer = AVPlayerLayer()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        playerLayer.backgroundColor = UIColor.clear.cgColor
+        self.backgroundColor = .clear
         self.layer.addSublayer(playerLayer)
     }
     required init?(coder: NSCoder) {

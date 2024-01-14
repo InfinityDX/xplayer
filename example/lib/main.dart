@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xplayer_example/pages/general_page.dart';
+import 'package:xplayer_example/pages/shorts_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,8 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       // home: Placeholder(),
-      home: GeneralPage(),
-      // home: ShortsPage(),
+      // home: GeneralPage(),
+      home: ShortsPage(),
     );
   }
 }

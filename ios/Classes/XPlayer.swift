@@ -11,14 +11,20 @@ import AVFoundation
 import AVKit
 
 class XPlayer:NSObject, FlutterStreamHandler{
-    let MAX_CAHCE_SIZE = 100 * 1024 * 1024 // in MB, in this case is 100MB
+    private let MAX_CAHCE_SIZE = 100 * 1024 * 1024 // in MB, in this case is 100MB
+    private var playerObserver: XPlayerObserver?
     
     
-    var player: AVQueuePlayer = AVQueuePlayer()
+    var player: AVPlayer = AVPlayer()
     var playerViewController: PlayerViewController = PlayerViewController()
+    var playLists: Dictionary<String, Playlist> = ["default" : Playlist()]
+    var currentPlaylist: String = "default"
+    
     
     func initilize(result: FlutterResult){
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+        playerObserver?.startObservation()
+        
         result("XPlayer Initialized")
     }
     
@@ -31,38 +37,95 @@ class XPlayer:NSObject, FlutterStreamHandler{
         let oldPlayerView = playerViewController.getCurrenView()
         let newPlayerView = playerViewController.getPlayerViewById(id: viewId)
         
+        
+        
+        if(oldPlayerView != nil){
+            (oldPlayerView?.layer as? AVPlayerLayer)?.player = nil
+            // Create a UIImage from the CGImage
+            
+        }
+        
         if(newPlayerView != nil){
             (newPlayerView?.layer as? AVPlayerLayer)?.player = player
         }
         
-        if(oldPlayerView != nil){
-            (oldPlayerView?.layer as? AVPlayerLayer)?.player = nil
-        }
-    
         playerViewController.setCurrentPlayerViewId(id: viewId)
     }
     
-    func registerPlaylist(){
+    func registerPlaylist(call: FlutterMethodCall, result: FlutterResult){
+        guard let playlistName = call.arguments as? String else{
+            result("Playlist Name is not String")
+            return
+        }
+        
+        if(playlistName.isEmpty){
+            result("Playlist Name cannot be empty")
+            return
+        }
+        
+        if(playLists[playlistName] == nil){
+            playLists[playlistName] = Playlist(name: playlistName)
+            result("Playlist \(playlistName) Added")
+        }
+    }
+    
+    func changePlaylist(call: FlutterMethodCall, result: FlutterResult){
+        guard let playlistName = call.arguments as? String else{
+            result("playlistName is not String")
+            return
+        }
+        
+        if(playLists[playlistName] == nil) {
+            result("Playlist not exist")
+            return
+        }
+        
+        guard let sources = playLists[playlistName]?.sources else{
+            result("Sources not exist")
+            return
+        }
+        let playIndex = playLists[playlistName]?.mediaSourceIndex ?? 0
+        
+        player.replaceCurrentItem(with: sources[playIndex])
+        currentPlaylist = playlistName
         
     }
     
-    func changePlaylist(){
+    func seekToNext(call: FlutterMethodCall, result: FlutterResult){
+        guard let playList = playLists[currentPlaylist] else{
+            result("Playlist not found")
+            return
+        }
         
-    }
-    
-    func seekToNext(){
         
+        let playIndex = playList.mediaSourceIndex + 1
+        playList.sources[playIndex].seek(to: CMTime.zero, completionHandler: nil)
+        player.replaceCurrentItem(with: playList.sources[playIndex])
+        playList.mediaSourceIndex = playIndex
+        player.play()
     }
     
     func seekTo(){
         
     }
     
-    func setPlayBackSpeed(){
+    func seekToPreviousMediaItem(call: FlutterMethodCall, result: FlutterResult){
+        guard let playList = playLists[currentPlaylist] else{
+            result("Playlist not found")
+            return
+        }
         
+        
+        var playIndex = playList.mediaSourceIndex - 1
+        if(playIndex < 0){ playIndex = 0}
+        
+        playList.sources[playIndex].seek(to: CMTime.zero, completionHandler: nil)
+        player.replaceCurrentItem(with: playList.sources[playIndex])
+        playList.mediaSourceIndex = playIndex
+        player.play()
     }
     
-    func seekToPreviousMediaItem(){
+    func setPlayBackSpeed(){
         
     }
     
@@ -81,27 +144,83 @@ class XPlayer:NSObject, FlutterStreamHandler{
             result("Failed to Parse URL")
             return
         }
+        let mediaAsset = AVAsset(url: urlInstance)
+        let mediaItem = AVPlayerItem(asset: mediaAsset)
+        playLists[currentPlaylist]?.sources.append(mediaItem)
         
-        let mediaItem = AVPlayerItem(url: urlInstance)
-        player.insert(mediaItem, after: nil)
-        
+        result("Add Media Source Success")
     }
     
-    func addMediaSources(){
+    func addMediaSources(call: FlutterMethodCall, result: FlutterResult){
+        guard let arg = call.arguments as? Array<Any> else{
+            result("MediaSources data is not Array")
+            return
+        }
         
+        for it in arg {
+            guard let source = it as? Dictionary<String, String> else{
+                continue
+            }
+            
+            guard let url = URL(string: source["url"] ?? "") else{
+                continue
+            }
+            
+            let mediaAsset = AVAsset(url: url)
+            let mediaItem = AVPlayerItem(asset: mediaAsset)
+            playLists[currentPlaylist]?.sources.append(mediaItem)
+        }
+        result("Add Media Sources Success")
     }
     
-    func setMediaSource(){
+    func setMediaSource(call: FlutterMethodCall, result: FlutterResult){
+        guard let arg = call.arguments as? Dictionary<String, String>? else{
+            result("MediaSource data is not a Map/Dictionary")
+            return
+        }
         
+        guard let url = arg?["url"] else{
+            result("url is not String")
+            return
+        }
+        
+        guard let urlInstance = URL(string: url) else{
+            result("Failed to Parse URL")
+            return
+        }
+        
+        let mediaAsset = AVAsset(url: urlInstance)
+        let mediaItem = AVPlayerItem(asset: mediaAsset)
+        playLists[currentPlaylist]?.sources.removeAll()
+        playLists[currentPlaylist]?.sources.append(mediaItem)
+        result("Set Media Source Success")
     }
     
-    func setMediaSources(){
+    func setMediaSources(call: FlutterMethodCall, result: FlutterResult){
+        guard let arg = call.arguments as? Array<Any> else{
+            result("MediaSources data is not Array")
+            return
+        }
         
+        playLists[currentPlaylist]?.sources.removeAll()
+        for it in arg {
+            guard let source = it as? Dictionary<String, String> else{
+                continue
+            }
+            
+            guard let url = URL(string: source["url"] ?? "") else{
+                continue
+            }
+            
+            let mediaAsset = AVAsset(url: url)
+            let mediaItem = AVPlayerItem(asset: mediaAsset)
+            playLists[currentPlaylist]?.sources.append(mediaItem)
+        }
+        result("Add Media Sources Success")
     }
     
     func clearMediaSource(){
-        
-    }
+        playLists[currentPlaylist]?.sources.removeAll()    }
     
     func changeQuality(){
         
@@ -112,8 +231,16 @@ class XPlayer:NSObject, FlutterStreamHandler{
     }
     
     func play(){
-        player.play()
+        guard let currentPlayIndex = playLists[currentPlaylist]?.mediaSourceIndex else{
+            return
+        }
+        guard let sources = playLists[currentPlaylist]?.sources else{
+            return
+        }
         
+        
+        player.replaceCurrentItem(with: sources[currentPlayIndex])
+        player.play()
     }
     func pause(){
         player.pause()
@@ -123,15 +250,13 @@ class XPlayer:NSObject, FlutterStreamHandler{
     }
     
     func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        
+        playerObserver = XPlayerObserver(player: player, flutterEventSink: events)
         return nil
     }
     
     func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        
         return nil
     }
-    
     
     
     let fakeData = [
@@ -150,6 +275,4 @@ class XPlayer:NSObject, FlutterStreamHandler{
         "https://wrs.youtubes.fan/temp/8fffa416-6f80-41a4-b609-41174e51bd98_48f93818-c86a-461d-9d34-c43b5121780e-playlist.m3u8",
         "https://wrs.youtubes.fan/temp/59852964-963b-4f8a-9fcd-3cd361ece5f5_c7722d32-3821-4a22-8ad0-2dbbb28bc09f-playlist.m3u8",
     ]
-    
-    
 }

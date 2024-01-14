@@ -31,43 +31,39 @@ public class XplayerPlugin: NSObject, FlutterPlugin {
             xplayer.claimPlayer(call: call, result: result)
             
         case "xplayer:registerPlaylist":
-            xplayer.registerPlaylist()
-            result("registerPlaylist")
+            xplayer.registerPlaylist(call: call, result: result)
             
         case "xplayer:changePlaylist":
-            xplayer.changePlaylist()
-            result("changePlaylist")
+            xplayer.changePlaylist(call: call, result: result)
             
         case "xplayer:seekToNext":
-            xplayer.seekToNext()
-            result("seekToNext")
+            xplayer.seekToNext(call: call, result: result)
             
         case "xplayer:seekTo":
             xplayer.seekTo()
             result("seekTo")
             
+        case "xplayer:seekToPreviousMediaItem":
+            xplayer.seekToPreviousMediaItem(call: call, result: result)
+            
         case "xplayer:setPlayBackSpeed":
             xplayer.setPlayBackSpeed()
             result("setPlayBackSpeed")
-            
-        case "xplayer:seekToPreviousMediaItem":
-            xplayer.seekToPreviousMediaItem()
-            result("seekToPreviousMediaItem")
             
         case "xplayer:addMediaSource":
             xplayer.addMediaSource(call: call, result: result)
             result("addMediaSource")
             
         case "xplayer:addMediaSources":
-            xplayer.addMediaSources()
+            xplayer.addMediaSources(call: call, result: result)
             result("addMediaSources")
             
         case "xplayer:setMediaSource":
-            xplayer.setMediaSource()
+            xplayer.setMediaSource(call: call, result: result)
             result("setMediaSource")
             
         case "xplayer:setMediaSources":
-            xplayer.setMediaSources()
+            xplayer.setMediaSources(call: call, result: result)
             result("setMediaSources")
             
         case "xplayer:clearMediaSource":
