@@ -40,7 +40,7 @@ public class XplayerPlugin: NSObject, FlutterPlugin {
             xplayer.seekToNext(call: call, result: result)
             
         case "xplayer:seekTo":
-            xplayer.seekTo()
+            xplayer.seekTo(call: call, result: result)
             result("seekTo")
             
         case "xplayer:seekToPreviousMediaItem":

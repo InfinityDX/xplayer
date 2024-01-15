@@ -118,8 +118,19 @@ class XPlayer:NSObject, FlutterStreamHandler{
         player.play()
     }
     
-    func seekTo(){
+    func seekTo(call: FlutterMethodCall, result: FlutterResult){
+        guard let position = call.arguments as? Int else {
+            result("posiiton is not Int")
+            return
+        }
         
+        guard let timeScale = player.currentItem?.duration.seconds else {
+            result("Could not get duration of currentItem")
+            return}
+        
+        let duration = CMTime(seconds: Double(position / 1000), preferredTimescale: CMTimeScale(Int(timeScale)))
+        
+        player.seek(to: duration)
     }
     
     func seekToPreviousMediaItem(call: FlutterMethodCall, result: FlutterResult){

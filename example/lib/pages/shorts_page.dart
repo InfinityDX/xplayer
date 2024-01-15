@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:xplayer/models/media_item.dart';
 
@@ -88,6 +87,9 @@ class _ShortsPageState extends State<ShortsPage> {
               ),
               SizedBox.expand(
                 child: GestureDetector(
+                  onDoubleTap: () {
+                    Xplayer.i.seekTo(const Duration(milliseconds: 5000));
+                  },
                   onLongPressStart: (details) {
                     oldSpeed = Xplayer.i.state.value.playbackSpeed ?? 1;
                   },
